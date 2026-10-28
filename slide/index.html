@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LUMA in practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one 16:9 slide. Tab bar on top, one screenshot filling the stage, one caption line, thumbnail strip when a tab has several shots. */
+:root{
+  --bg:#120d33; --fg:#f8f6f2; --muted:#b4afd3; --tab:#2a2452; --tab-on:#f2866c; --tab-on-fg:#120d33;
+  --stage:#1b1640; --line:rgba(255,255,255,.12);
+  --font:"Figtree","Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px}
+.slide{position:relative;width:100%;aspect-ratio:16/9;max-width:100%;display:grid;grid-template-rows:auto 1fr auto;gap:8px;padding:12px max(12px,env(safe-area-inset-right,0px)) 12px max(12px,env(safe-area-inset-left,0px));overflow:hidden}
+header{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700;letter-spacing:.02em;font-size:.95rem;margin-right:auto;white-space:nowrap}
+.brand i{width:12px;height:12px;border-radius:50% 50% 50% 0;background:var(--tab-on);display:inline-block}
+.tabs{display:flex;gap:4px;flex-wrap:wrap}
+.tabs button{font:inherit;font-weight:600;font-size:.82rem;border:0;background:var(--tab);color:var(--fg);padding:6px 11px;border-radius:999px;cursor:pointer;white-space:nowrap}
+.tabs button[aria-selected="true"]{background:var(--tab-on);color:var(--tab-on-fg)}
+.tabs button:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.stage{position:relative;min-height:0;background:var(--stage);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:grid;place-items:center}
+.stage img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block}
+.stage img[hidden]{display:none}
+.arrow{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;border:0;background:rgba(18,13,51,.75);color:var(--fg);font-size:18px;cursor:pointer;display:grid;place-items:center}
+.arrow.prev{left:8px}.arrow.next{right:8px}
+.arrow[hidden]{display:none}
+footer{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;min-height:22px}
+.cap{font-size:.86rem;color:var(--muted);margin:0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cap b{color:var(--fg);font-weight:600}
+.dots{display:flex;gap:5px}
+.dots button{width:8px;height:8px;border-radius:50%;border:0;background:var(--line);padding:0;cursor:pointer}
+.dots button[aria-current="true"]{background:var(--tab-on)}
+@media (max-width:640px){
+  .slide{aspect-ratio:4/5}
+  .tabs button{font-size:.76rem;padding:5px 9px}
+  .cap{white-space:normal;font-size:.8rem}
+}
+</style>
+</head>
+<body>
+<div class="slide" id="app">
+  <header>
+    <div class="brand"><i></i>LUMA · AI learning assistant</div>
+    <div class="tabs" role="tablist" aria-label="Views"></div>
+  </header>
+  <div class="stage" id="stage">
+    <button class="arrow prev" id="prev" aria-label="Previous screenshot">‹</button>
+    <button class="arrow next" id="next" aria-label="Next screenshot">›</button>
+  </div>
+  <footer>
+    <p class="cap" id="cap"></p>
+    <div class="dots" id="dots"></div>
+  </footer>
+</div>
+<script>
+var VIEWS=[
+ {tab:"In the course",shots:[
+  {src:"../assets/study-mode-quiz.png",cap:"<b>Study mode.</b> LUMA inside a KCL Product Design course page in Canvas, building a quiz from Module 2."},
+  {src:"../assets/study-mode-flashcard.png",cap:"<b>Feedback and practice.</b> Marks the quiz, then offers a fill-the-blank flashcard."},
+  {src:"../assets/conversation-history.png",cap:"<b>Conversation history.</b> Learners return to earlier chats and quizzes across courses."}]},
+ {tab:"Human support",shots:[
+  {src:"../assets/helpdesk-options.png",cap:"<b>Help-desk menu.</b> Email Student Success or go to the community, agreed per programme."},
+  {src:"../assets/escalate-form.png",cap:"<b>Escalation.</b> Personal, sensitive or policy questions create a ticket for a person."}]},
+ {tab:"Careers",shots:[
+  {src:"../assets/careers-welcome.png",cap:"<b>Career Playbooks assistant.</b> Preset actions for CV and cover-letter review, built with the Careers team."},
+  {src:"../assets/cv-review.png",cap:"<b>CV review.</b> Length check first, then a readiness score and top issues, following the Careers review standard."}]},
+ {tab:"Running it",shots:[
+  {src:"../assets/clickup-bau.png",cap:"<b>BAU board.</b> Every piece of LUMA work ticketed in ClickUp, grouped by status."},
+  {src:"../assets/clickup-ku-form.png",cap:"<b>Knowledge updates.</b> Delivery requests changes by form; one ticket per assistant."},
+  {src:"../assets/clickup-ku-task.png",cap:"<b>A completed update.</b> Programme calendar added for an LSE assistant."},
+  {src:"../assets/clickup-ku-sop.png",cap:"<b>The SOP.</b> Short process doc linked from the form."},
+  {src:"../assets/clickup-new-luma-form.png",cap:"<b>New assistant request.</b> Everything a build needs, captured in one submission."},
+  {src:"../assets/getting-started-flow.png",cap:"<b>Data access.</b> Five steps from request to first login for Delivery and Student Success."}]},
+ {tab:"Data",shots:[
+  {src:"../assets/report-glance-06.png",cap:"<b>Monthly report.</b> KCL, September 2026: 425 conversations, 95.1% grounded, 2 escalations."},
+  {src:"../assets/report-topics-27.png",cap:"<b>Topic clustering.</b> What learners ask about, down to the page that needs a worked example."}]}
+];
+(function(){
+  var tabsEl=document.querySelector('.tabs'),stage=document.getElementById('stage'),cap=document.getElementById('cap'),dots=document.getElementById('dots'),prev=document.getElementById('prev'),next=document.getElementById('next');
+  var v=0,s=0,imgs=[];
+  VIEWS.forEach(function(view,i){
+    var b=document.createElement('button');b.type='button';b.role='tab';b.id='tab'+i;b.textContent=view.tab;b.setAttribute('aria-selected','false');
+    b.addEventListener('click',function(){v=i;s=0;render();});tabsEl.appendChild(b);
+    view.shots.forEach(function(sh){var im=new Image();im.src=sh.src;im.alt=sh.cap.replace(/<[^>]+>/g,'');im.hidden=true;im.loading='lazy';stage.appendChild(im);imgs.push({v:i,el:im});});
+  });
+  function render(){
+    tabsEl.querySelectorAll('button').forEach(function(b,i){b.setAttribute('aria-selected',String(i===v));});
+    var k=0;imgs.forEach(function(o){if(o.v===v){o.el.hidden=(k!==s);k++;}else{o.el.hidden=true;}});
+    cap.innerHTML=VIEWS[v].shots[s].cap;
+    var n=VIEWS[v].shots.length;prev.hidden=next.hidden=(n<2);
+    dots.innerHTML='';for(var i=0;i<n;i++){var d=document.createElement('button');d.type='button';d.setAttribute('aria-label','Screenshot '+(i+1));d.setAttribute('aria-current',String(i===s));(function(i){d.addEventListener('click',function(){s=i;render();});})(i);dots.appendChild(d);}
+    try{location.hash=VIEWS[v].tab.toLowerCase().replace(/[^a-z]+/g,'-');}catch(e){}
+  }
+  prev.addEventListener('click',function(){var n=VIEWS[v].shots.length;s=(s-1+n)%n;render();});
+  next.addEventListener('click',function(){var n=VIEWS[v].shots.length;s=(s+1)%n;render();});
+  document.addEventListener('keydown',function(e){if(e.key==='ArrowRight')next.click();if(e.key==='ArrowLeft')prev.click();});
+  var h=(location.hash||'').replace('#','');VIEWS.forEach(function(view,i){if(view.tab.toLowerCase().replace(/[^a-z]+/g,'-')===h)v=i;});
+  render();
+})();
+</script>
+</body>
+</html>

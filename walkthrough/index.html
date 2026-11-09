@@ -1,0 +1,1220 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>LUMA Walk-through</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: an amber tour band sits above a made-up copy of the LUMA admin (navy sidebar + Inbox / Improvements / Insights screens).
+   Single light theme on purpose: it mirrors the light admin screens staff will use. */
+:root{
+  --ink:#161b33; --muted:#62687f; --faint:#9298ad; --line:#e3e5ee; --surface:#ffffff; --canvas:#f3f4f8;
+  --navy:#0d1665; --navy-2:#1c2789; --blue:#2a39ad; --blue-soft:#eceefb; --blue-line:#c9cdf2;
+  --green:#1b7a46; --green-soft:#e5f3ea; --red:#b8382a; --red-soft:#fbebe8;
+  --amber:#e09b14; --amber-soft:#fff5dc; --amber-line:#efd38f; --amber-ink:#4a3300;
+  --chart-1:#2f5be0; --chart-2:#16996a;
+  --f-ui:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-display:'Bricolage Grotesque','Figtree',system-ui,sans-serif;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+html,body{background:var(--canvas)}
+body{color:var(--ink);font-family:var(--f-ui);font-size:14px;line-height:1.45}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--canvas)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+.page{max-width:1500px;margin:0 auto;padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:14px}
+.intro{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:flex-end;justify-content:space-between}
+.intro h1{font-family:var(--f-display);font-size:30px;line-height:1.1;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.intro p{margin:6px 0 0;color:var(--muted);max-width:66ch}
+.badge{display:inline-flex;align-items:center;gap:6px;background:var(--amber-soft);border:1px solid var(--amber-line);color:var(--amber-ink);border-radius:999px;padding:4px 12px;font-size:12px;font-weight:700;white-space:nowrap}
+
+/* Tour band */
+.coach{background:var(--amber-soft);border:1px solid var(--amber-line);border-radius:14px;padding:12px 16px 14px;z-index:40}
+@media (min-width:900px) and (min-height:820px){.coach{position:sticky;top:env(safe-area-inset-top,0px)}}
+.tour{display:grid;gap:8px;color:var(--ink)}
+.tmeta{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.chapters{display:inline-flex;flex-wrap:wrap;gap:4px;border:1px solid var(--amber-line);background:#fffdf6;border-radius:999px;padding:2px}
+.chapters button{border:0;background:none;border-radius:999px;padding:3px 11px;font-size:12.5px;font-weight:700;cursor:pointer;color:var(--amber-ink)}
+.chapters button.on{background:var(--ink);color:#fff}
+.count{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--amber)}
+.tdots{display:flex;gap:5px;flex-wrap:wrap}
+.tdot{width:8px;height:8px;border-radius:50%;border:0;padding:0;background:var(--amber-line);cursor:pointer}
+.tdot.past{background:var(--amber)}
+.tdot.on{background:var(--ink);width:20px;border-radius:999px}
+.tskip{margin-left:auto;border:0;background:none;color:var(--amber-ink);font-size:13px;font-weight:600;cursor:pointer;text-decoration:underline}
+.tour h3{margin:0;font-family:var(--f-display);font-size:20px;line-height:1.2}
+.tour p{margin:0;max-width:74ch;font-size:15px}
+.cbtns{display:flex;gap:8px;flex-wrap:wrap}
+.cbtn{border:1px solid var(--amber-line);background:#fffdf6;border-radius:8px;padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer;color:var(--amber-ink)}
+.cbtn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.spot{outline:3px solid var(--amber)!important;outline-offset:2px;border-radius:8px;box-shadow:0 0 0 8px rgba(224,155,20,.18)}
+.inset.spot{outline-offset:-3px;box-shadow:none;border-radius:0}
+
+/* App frame */
+.app{display:grid;grid-template-columns:196px minmax(0,1fr);height:740px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface);position:relative;box-shadow:0 1px 2px rgba(20,25,60,.05),0 10px 30px rgba(20,25,60,.07)}
+.side{background:var(--navy);color:#d9ddff;display:flex;flex-direction:column;padding:14px 10px;gap:4px}
+.logo{font-family:var(--f-display);font-size:21px;font-weight:700;color:#fff;padding:2px 8px 14px;display:flex;align-items:center;gap:8px}
+.logo small{font-family:var(--f-ui);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--amber);color:#2a1d00;border-radius:4px;padding:1px 5px}
+.nav{display:grid;gap:4px;border-radius:8px}
+.nav button{display:flex;gap:10px;align-items:center;width:100%;padding:7px 10px;border-radius:8px;color:#d9ddff;background:none;border:1px solid transparent;font-size:13.5px;cursor:pointer;text-align:left}
+.nav button:hover{background:rgba(255,255,255,.07)}
+.nav .on{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3);color:#fff}
+.sbottom{margin-top:auto;display:grid;gap:8px}
+.sb-item{display:flex;gap:10px;align-items:center;padding:7px 10px;font-size:13px}
+.sb-box{border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:8px 10px;display:flex;gap:10px;align-items:center;font-size:12.5px}
+.sb-box .av{width:26px;height:26px;font-size:11px;background:#1f7a46}
+.sb-box small{display:block;color:#aab1e8;font-size:11px}
+
+.main{display:grid;grid-template-rows:auto minmax(0,1fr);min-width:0;min-height:0;position:relative}
+.topbar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-start;justify-content:space-between;padding:14px 18px 10px;border-bottom:1px solid var(--line)}
+.topbar h2{margin:0;font-size:21px;font-weight:600}
+.topbar .chips{margin-top:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--blue-soft);border:1px solid var(--blue-line);color:var(--navy);border-radius:7px;padding:3px 8px;font-size:12px}
+.chip b{font-weight:700}
+.chip button{border:0;background:none;padding:0;display:grid;place-items:center;cursor:pointer;color:var(--blue)}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;position:relative;border-radius:8px}
+.search{position:relative;display:flex;align-items:center}
+.search svg{position:absolute;left:10px;color:var(--muted);pointer-events:none}
+.search input{width:220px;max-width:100%;border:1px solid #cfd3e2;border-radius:8px;padding:7px 10px 7px 32px;font:inherit;font-size:13px;color:var(--ink);background:#fff}
+.tbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid #cfd3e2;background:#fff;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer}
+.tbtn:hover{border-color:var(--ink)}
+.tbtn.dark{background:var(--navy);border-color:var(--navy);color:#fff}
+.menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px rgba(20,25,60,.16);padding:6px;min-width:170px;z-index:25;display:grid}
+.menu button{border:0;background:none;text-align:left;padding:8px 10px;border-radius:7px;font-size:13px;cursor:pointer}
+.menu button:hover{background:var(--blue-soft);color:var(--blue)}
+
+/* Inbox */
+.body{display:grid;grid-template-columns:minmax(230px,290px) minmax(0,1fr) 250px;min-height:0}
+.body.nodetails{grid-template-columns:minmax(230px,290px) minmax(0,1fr)}
+.body.nodetails .details{display:none}
+.list{border-right:1px solid var(--line);overflow:auto;min-height:0;display:flex;flex-direction:column}
+.listhead{display:flex;align-items:center;gap:6px;padding:10px 14px;border-bottom:1px solid var(--line);font-size:12.5px;font-weight:600}
+.listhead .cnt{color:var(--blue);font-size:11px}
+.group{padding:8px 14px;font-size:12px;font-weight:600;color:var(--muted);background:#fafbfd;border-bottom:1px solid var(--line)}
+.card{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;padding:12px 14px;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;width:100%;cursor:pointer}
+.card:hover{background:#f7f8fc}
+.card.on{background:var(--blue-soft)}
+.card .nm{display:block;font-weight:600;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card .pv{display:block;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:2px 0 6px}
+.card .dt{display:block;color:var(--muted);font-size:11.5px;margin-top:6px}
+.av{width:34px;height:34px;border-radius:50%;background:#676d86;color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700;flex:none}
+.pill{display:inline-block;border:1px solid var(--ink);border-radius:999px;padding:1px 8px;font-size:11px;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:top}
+.empty{padding:28px 18px;color:var(--muted);text-align:center;display:grid;gap:8px;justify-items:center}
+.loadmore{margin-top:auto;border:0;border-top:1px solid var(--line);background:#fff;padding:10px;font-weight:600;font-size:13px;cursor:pointer}
+.conv{overflow:auto;min-width:0;min-height:0;padding:14px 18px 24px}
+.chead{border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.chead .who{min-width:0}
+.chead .who b{display:block}
+.chead .who span{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.idchip{margin-left:auto;border:1px solid var(--ink);border-radius:999px;font-size:11px;padding:2px 8px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.panelbtn{border:0;background:none;color:var(--muted);cursor:pointer;padding:4px;border-radius:6px}
+.meta{font-size:12px;color:var(--muted);margin:10px 0 0;display:flex;align-items:center;gap:10px}
+.meta::after{content:"";flex:1;height:1px;background:var(--line)}
+.srow{display:flex;gap:10px;align-items:flex-start;margin:16px 0 6px}
+.bubble{background:var(--navy-2);color:#fff;border-radius:12px;padding:9px 14px;max-width:min(80%,560px);overflow-wrap:anywhere}
+.wf{display:flex;align-items:center;gap:10px;margin:10px 0;font-size:12px;font-weight:600}
+.wf::before,.wf::after{content:"";flex:1;height:1px;background:var(--line)}
+.wf span{border:1px solid var(--line);border-radius:999px;padding:3px 10px;background:#fff;display:inline-flex;gap:6px;align-items:center;white-space:nowrap}
+.wf .dot{width:9px;height:9px;border-radius:50%;border:2px solid #f0a7a0}
+.wf .dot.go{border-color:#9fd4b4}
+.luma{margin-left:44px}
+.thought{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;border-bottom:1px solid var(--line);padding:8px 0;cursor:pointer;text-align:left}
+.api{border:1px solid var(--line);border-radius:999px;padding:1px 8px;font-size:12px}
+.act{margin-left:auto;border:1px solid #a9dcbc;background:var(--green-soft);color:var(--green);border-radius:999px;padding:1px 10px;font-size:12px}
+.steps{margin:8px 0 0;padding:10px 12px 10px 28px;border:1px dashed var(--line);border-radius:10px;font-size:12.5px;color:var(--muted);display:grid;gap:4px}
+.answer{font-size:13.5px;line-height:1.6;padding:10px 0 4px}
+.answer p{margin:0 0 8px}
+.answer ul{margin:0 0 8px;padding-left:20px}
+.linked{display:inline-flex;align-items:center;gap:6px;background:var(--green-soft);border:1px solid #a9dcbc;color:var(--green);border-radius:8px;padding:4px 10px;font-size:12.5px;font-weight:600;margin:4px 0 8px}
+.imprwrap{position:relative;display:inline-block}
+.btn-improve{display:inline-flex;gap:6px;align-items:center;background:var(--blue-soft);border:1px solid var(--blue-line);color:var(--blue);border-radius:8px;padding:6px 12px;font-weight:600;font-size:13px;cursor:pointer}
+.btn-improve:hover{border-color:var(--blue)}
+.pop{position:absolute;left:0;top:calc(100% + 6px);width:min(340px,80vw);background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 34px rgba(20,25,60,.18);padding:10px;z-index:22;display:grid;gap:8px}
+.pop .popt{border:1px solid var(--line);background:#fff;border-radius:8px;padding:9px 10px;text-align:left;cursor:pointer;display:grid;gap:2px}
+.pop .popt:hover{border-color:var(--blue);background:var(--blue-soft)}
+.pop .popt b{font-size:13px}
+.pop .popt span{font-size:12px;color:var(--muted)}
+.pop input{border:1px solid #cfd3e2;border-radius:8px;padding:7px 10px;font:inherit;font-size:13px}
+.lwres{display:grid;gap:4px;max-height:190px;overflow:auto}
+.lw{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:7px 9px;background:#fff;cursor:pointer;text-align:left;font-size:12.5px}
+.lw:hover{border-color:var(--blue);background:var(--blue-soft)}
+.lw .id{color:var(--muted);font-variant-numeric:tabular-nums}
+.lw .st{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:0 7px;color:var(--muted)}
+.pophint{font-size:12px;color:var(--muted);margin:0}
+.linkbtn{border:0;background:none;color:var(--blue);font-weight:600;font-size:12.5px;cursor:pointer;padding:2px 0;justify-self:start}
+.srcrow{display:flex;align-items:center;gap:10px;margin-top:10px}
+.srcrow .rule{flex:1;height:1px;background:var(--line)}
+.btn-src{border:1px solid var(--ink);border-radius:999px;background:#fff;padding:3px 12px;font-size:12px;cursor:pointer}
+.btn-src[aria-expanded="true"]{background:var(--ink);color:#fff}
+.ib{background:none;border:0;padding:4px;color:var(--faint);cursor:pointer;border-radius:6px;display:grid;place-items:center}
+.ib:hover{color:var(--ink)}
+.ib.up-on{color:var(--green)}
+.ib.down-on{color:var(--red)}
+.srclist{margin:8px 0 0;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fafbfe;display:grid;gap:8px;font-size:13px}
+.srclist div{display:grid;gap:1px}
+.srctype{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.nosrc{font-size:12.5px;color:var(--muted)}
+.fb{display:grid;gap:4px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:18px 0 0;background:#fff}
+.fb .lbl{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.stars{color:var(--amber);font-size:16px;letter-spacing:2px}
+.stars .off{color:#d7d9e3}
+.convempty{display:grid;place-items:center;height:100%;color:var(--muted);text-align:center;padding:24px}
+.details{border-left:1px solid var(--line);overflow:auto;min-height:0;padding:12px;display:grid;gap:12px;align-content:start;background:#fbfbfd}
+.dcard{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff;display:grid;gap:10px}
+.dcard h3{margin:0;font-size:14.5px;font-weight:600}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px}
+.kv .wide{grid-column:1/-1}
+.df{display:grid;gap:1px;min-width:0}
+.df .k{font-size:11px;font-weight:600;color:var(--ink)}
+.df .v{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.df .v.link{color:var(--blue);text-decoration:underline}
+.esc-on{color:var(--red);font-weight:600}
+
+/* Panels and modals */
+.filters{position:absolute;top:10px;right:14px;width:320px;max-height:calc(100% - 20px);overflow:auto;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 44px rgba(20,25,60,.2);padding:12px 16px 16px;z-index:24;display:grid;gap:10px;align-content:start}
+.fhead{display:flex;align-items:center;justify-content:space-between}
+.fhead b{font-size:14px}
+.fhead button{border:0;background:none;color:var(--navy);font-weight:600;font-size:13px;cursor:pointer;display:inline-flex;gap:4px;align-items:center}
+.fl{display:grid;gap:4px;font-size:13px;font-weight:600}
+.fl select,.fl input,.field input,.field select{font:inherit;font-size:13px;font-weight:400;border:1px solid #cfd3e2;border-radius:8px;padding:7px 10px;background:#fff;color:var(--ink);width:100%}
+.fsec{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-top:4px;border-top:1px solid var(--line);padding-top:10px}
+.fnote{font-size:12px;color:var(--muted);margin:0}
+.freset{border:1px solid #cfd3e2;background:#fff;border-radius:8px;padding:6px 10px;font-size:13px;cursor:pointer;justify-self:start}
+.overlay{position:absolute;inset:0;background:rgba(14,18,40,.38);display:grid;place-items:center;z-index:30;padding:16px}
+.modal{background:#fff;border-radius:14px;width:min(500px,100%);max-height:100%;overflow:auto;box-shadow:0 20px 60px rgba(10,14,40,.3);display:grid}
+.modal.wide{width:min(760px,100%)}
+.mhead{display:flex;justify-content:space-between;align-items:center;padding:18px 22px 6px}
+.mhead h3{margin:0;font-size:19px;font-weight:700}
+.mbody{padding:8px 22px 18px;display:grid;gap:14px}
+.mfoot{display:flex;justify-content:flex-end;gap:10px;padding:14px 22px;border-top:1px solid var(--line);background:#fafbfd;border-radius:0 0 14px 14px}
+.field{display:grid;gap:6px}
+.field>label,.field>span{font-weight:600;font-size:13.5px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.req{color:var(--red)}
+.sub{font-size:12px;color:var(--muted)}
+.radios{display:flex;gap:10px 16px;flex-wrap:wrap}
+.radios.col{flex-direction:column;gap:8px}
+.radios label,.checks label{display:inline-flex;gap:8px;align-items:center;font-size:13.5px;cursor:pointer}
+.checks{display:grid;gap:8px}
+.radios input,.checks input{accent-color:var(--navy);width:16px;height:16px}
+.hint{font-size:12px;color:var(--muted);margin:-4px 0 0 24px}
+.b{border:1px solid #cfd3e2;background:#fff;border-radius:9px;padding:8px 16px;font-weight:600;cursor:pointer}
+.b.dark{background:var(--navy);border-color:var(--navy);color:#fff}
+.b:disabled{opacity:.45;cursor:not-allowed}
+.tablewrap{overflow-x:auto}
+.xtable{width:100%;border-collapse:collapse;font-size:13px}
+.xtable th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line)}
+.xtable td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top;font-variant-numeric:tabular-nums}
+.status{font-size:11.5px;font-weight:700;border-radius:999px;padding:2px 8px;white-space:nowrap}
+.status.ready{background:var(--green-soft);color:var(--green)}
+.status.loading{background:var(--amber-soft);color:var(--amber-ink)}
+.mini{border:0;background:none;color:var(--blue);font-weight:600;cursor:pointer;padding:0;font-size:12.5px;margin-right:10px}
+
+/* Improvements */
+.imp{overflow:auto;min-height:0;padding:4px 18px 20px}
+.grp{border-bottom:1px solid var(--line)}
+.ghead{display:flex;align-items:center;gap:10px;padding:14px 4px 10px}
+.tog{border:0;background:none;cursor:pointer;display:flex;gap:10px;align-items:center;font-size:15.5px;font-weight:600;padding:0}
+.tog svg{transition:transform .15s}
+.tog[aria-expanded="false"] svg{transform:rotate(-90deg)}
+.gcount{font-size:11px;background:var(--canvas);border:1px solid var(--line);border-radius:999px;padding:0 7px;font-weight:600}
+.gexp{margin-left:auto;border:0;background:none;font-size:12px;font-weight:700;cursor:pointer;color:var(--navy)}
+.irow{display:grid;grid-template-columns:62px 22px minmax(0,1fr) auto auto 30px;gap:10px;align-items:center;padding:9px 4px;border:0;border-top:1px solid var(--line);width:100%;background:none;text-align:left;cursor:pointer}
+.irow:hover{background:#f7f8fc}
+.lwid{color:var(--faint);font-size:12px;font-variant-numeric:tabular-nums}
+.prio{color:var(--faint);font-size:13px;letter-spacing:1px}
+.prio.high{color:var(--red);font-weight:800;letter-spacing:0}
+.ititle{color:var(--navy);font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.idate{font-size:11px;color:var(--navy);white-space:nowrap}
+.tags{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;border-radius:8px}
+.tag{border:1px solid var(--ink);border-radius:999px;padding:2px 9px;font-size:11px;white-space:nowrap;background:#fff}
+.whoav{width:26px;height:26px;border-radius:50%;background:#eceef4;font-size:10px;font-weight:700;display:grid;place-items:center;color:var(--muted)}
+.idet{overflow:auto;min-height:0;display:grid;align-content:start}
+.ihead{background:#eef5fb;padding:14px 22px 16px;display:grid;gap:4px}
+.crumb{font-size:12px;display:flex;gap:8px;align-items:center}
+.crumb button{border:0;background:none;padding:0;text-decoration:underline;cursor:pointer;font-size:12px}
+.ihead h2{margin:4px 0 0;font-size:18px;font-weight:600}
+.ihead h2 span{color:var(--muted);font-weight:400;margin-right:6px}
+.igrid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px 26px;padding:18px 22px 24px}
+.desc{border:1px solid #c9ccd8;border-radius:8px;padding:10px 12px;font-size:13px;line-height:1.55;margin:6px 0 0}
+.imeta{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px 12px;align-items:center;font-size:12.5px;align-content:start;padding:6px;margin:-6px}
+.imeta .k{color:var(--muted)}
+.imeta select,.imeta input{font:inherit;font-size:12.5px;border:1px solid var(--ink);border-radius:999px;padding:3px 10px;background:#fff;color:var(--ink);max-width:100%}
+.assoc{background:#f1f6fb;border-radius:12px;padding:14px 18px}
+.assoc h3,.isrc h3{margin:0 0 4px;font-size:18px;font-weight:600}
+.isrc{display:grid;gap:8px;align-content:start}
+
+/* Insights */
+.ins{display:grid;grid-template-columns:170px minmax(0,1fr);min-height:0}
+.subnav{border-right:1px solid var(--line);padding:12px 10px;display:grid;gap:4px;align-content:start}
+.subnav button{text-align:left;border:1px solid transparent;background:none;border-radius:8px;padding:7px 10px;font-size:13px;cursor:pointer}
+.subnav .on{background:var(--blue-soft);border-color:var(--blue-line)}
+.inspane{display:grid;grid-template-rows:auto minmax(0,1fr);min-width:0;min-height:0;position:relative}
+.insbody{overflow:auto;min-height:0;padding:16px 18px 24px;display:grid;gap:12px;align-content:start}
+.mgrid{display:grid;gap:12px;border-radius:12px}
+.mrow{display:grid;gap:12px}
+.r4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.r3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.r2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.metric{border:1px solid var(--line);border-radius:12px;padding:12px 16px;display:grid;gap:2px;align-content:start;min-width:0}
+.metric h4{margin:0;font-size:13.5px;font-weight:600;display:flex;gap:6px;align-items:center}
+.metric .msub{font-size:12px;color:var(--muted)}
+.metric .bigrow{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-top:6px}
+.metric .big{font-size:27px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.1}
+.metric .big.good{color:var(--green)}
+.vb{font-size:12.5px;text-decoration:underline;color:var(--navy);border:0;background:none;cursor:pointer;padding:0}
+.chartbox{border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;gap:10px}
+.chartwrap{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:12px}
+.chartwrap svg{width:100%;height:auto;display:block}
+.legend{display:grid;gap:6px;font-size:12px;align-content:start;color:var(--navy)}
+.legend span{display:flex;gap:6px;align-items:center}
+.legend i{width:10px;height:10px;border-radius:50%;flex:none}
+.legend .muted{color:var(--faint)}
+.tsvg text{font-family:var(--f-ui);font-size:11px;fill:var(--muted)}
+.trends{display:grid;grid-template-columns:260px minmax(0,1fr);min-height:0}
+.tlist{border-right:1px solid var(--line);overflow:auto;min-height:0}
+.titem{display:grid;gap:6px;padding:12px 14px;border:0;border-bottom:1px solid var(--line);background:none;width:100%;text-align:left;cursor:pointer}
+.titem:hover{background:#f7f8fc}
+.titem.on{background:var(--blue-soft)}
+.titem .row{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.ready{font-size:10px;font-weight:800;color:var(--green);border:1px solid #9fd4b4;border-radius:999px;padding:0 7px;letter-spacing:.05em}
+.range{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:1px 8px;justify-self:start;background:#fff}
+.tdet{overflow:auto;min-height:0;display:grid;align-content:start}
+.tdhead{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:flex-start;padding:14px 18px;border-bottom:1px solid var(--line)}
+.tdhead b{display:block;font-size:15px}
+.themes{padding:14px 18px;display:grid;gap:10px;border-radius:8px}
+.theme{border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px}
+.theme .n{font-size:11px;border:1px solid var(--line);border-radius:6px;padding:1px 6px;grid-row:1/3;align-self:start;white-space:nowrap;font-variant-numeric:tabular-nums;display:inline-flex;gap:3px;align-items:center}
+.theme b{font-size:13.5px}
+.theme p{margin:0;font-size:12.5px;color:var(--muted)}
+.textlink{border:0;background:none;color:var(--navy);font-weight:600;cursor:pointer;padding:6px 10px;display:inline-flex;gap:6px;align-items:center}
+
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;z-index:80;max-width:min(520px,calc(100vw - 32px));box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.foot{color:var(--muted);font-size:12.5px;margin:0}
+
+@media (max-width:1180px){
+  .body,.body.nodetails{grid-template-columns:minmax(220px,270px) minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto}
+  .list{grid-column:1;grid-row:1/3}
+  .conv{grid-column:2;grid-row:1}
+  .details{grid-column:2;grid-row:2;border-left:0;border-top:1px solid var(--line);grid-template-columns:repeat(3,minmax(0,1fr));max-height:250px}
+  .irow{grid-template-columns:62px minmax(0,1fr) 30px}
+  .irow .prio,.irow .idate{display:none}
+  .irow .lwid{grid-column:1;grid-row:1}
+  .irow .ititle{grid-column:2;grid-row:1}
+  .irow .whoav{grid-column:3;grid-row:1}
+  .irow .tags{grid-column:2;grid-row:2;justify-content:flex-start}
+  .r4,.r3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .igrid{grid-template-columns:1fr}
+}
+@media (max-width:860px){
+  .app{grid-template-columns:1fr;height:auto}
+  .side{flex-direction:row;flex-wrap:wrap;align-items:center;padding:10px 12px;gap:8px}
+  .logo{padding:0 8px 0 0}
+  .nav{display:flex;flex-wrap:wrap;gap:4px}
+  .nav button{width:auto}
+  .sbottom{display:none}
+  .body,.body.nodetails{grid-template-columns:1fr;grid-template-rows:none}
+  .list{grid-column:1;grid-row:auto;max-height:340px;border-right:0;border-bottom:1px solid var(--line)}
+  .conv{grid-column:1;grid-row:auto;max-height:640px}
+  .details{grid-column:1;grid-row:auto;grid-template-columns:1fr;max-height:none}
+  .body.nodetails .details{display:none}
+  .filters{left:12px;right:12px;width:auto;top:60px;max-height:560px}
+  .luma{margin-left:0}
+  .search{flex:1 1 200px}
+  .search input{width:100%}
+  .imp,.idet,.insbody,.tdet{max-height:680px}
+  .ins,.trends{grid-template-columns:1fr}
+  .subnav{display:flex;flex-wrap:wrap;border-right:0;border-bottom:1px solid var(--line)}
+  .tlist{max-height:220px;border-right:0;border-bottom:1px solid var(--line)}
+  .chartwrap{grid-template-columns:1fr}
+  .legend{display:flex;flex-wrap:wrap;gap:6px 14px}
+}
+@media (max-width:560px){
+  .r4,.r3,.r2,.two{grid-template-columns:1fr}
+}
+</style>
+
+<div class="page">
+  <header class="intro">
+    <div>
+      <h1>LUMA walk-through</h1>
+      <p>A five-minute tour of the three LUMA sections you can use: Inbox, Improvements and Insights. Click <b>Next</b> to move through it, or click around. Everything here is made up, and nothing you do changes LUMA.</p>
+    </div>
+    <span class="badge">Practice copy · made-up data</span>
+  </header>
+
+  <section class="coach" id="coach" aria-live="polite"></section>
+
+  <div class="app" id="app"></div>
+
+  <p class="foot">This practice copy follows the LUMA admin screens as of October 2026. Small details may look different in LUMA.</p>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- icons ---------- */
+const P = {
+  inbox:'<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13L22 12v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6z"/>',
+  wand:'<path d="m3 21 9-9"/><path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8 19 13M17.8 6.2 19 5M12.2 6.2 11 5"/>',
+  chart:'<path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/>',
+  help:'<circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2.5-3 4.5"/><path d="M12 17.5h.01"/>',
+  filter:'<path d="M22 3H2l8 9.46V19l4 2v-8.54z"/>',
+  download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/>',
+  chev:'<path d="m6 9 6 6 6-6"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
+  copy:'<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+  up:'<path d="M7 10v12"/><path d="M15 5.9 14 10h5.8a2 2 0 0 1 2 2.3l-1.4 8A2 2 0 0 1 18.4 22H7V10l4-8a3 3 0 0 1 4 3.9z"/>',
+  down:'<path d="M17 14V2"/><path d="M9 18.1 10 14H4.2a2 2 0 0 1-2-2.3l1.4-8A2 2 0 0 1 5.6 2H17v12l-4 8a3 3 0 0 1-4-3.9z"/>',
+  panel:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M15 3v18"/>',
+  x:'<path d="M18 6 6 18M6 6l12 12"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/>',
+  link:'<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  table:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/>'
+};
+const ic = (n, s=16) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]}</svg>`;
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---------- dates ---------- */
+const DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const dayDate = off => new Date(2026, 9, 21 - off);
+const fmt = d => `${DN[d.getDay()]} ${MN[d.getMonth()]} ${d.getDate()} ${d.getFullYear()}`;
+const RANGE = {'30':'Mon Sep 21 2026 - Wed Oct 21 2026','7':'Wed Oct 14 2026 - Wed Oct 21 2026','1':'Wed Oct 21 2026'};
+
+/* ---------- made-up data: conversations ---------- */
+const ASSISTANTS = ['CAM_CY_2026','CAM_DS_2026','Career Playbooks','KCL_PD_2026','KCL_PM_2026','LSE_AI_2026','LSE_DA_2026','LSE_DM_2026'];
+const AID = {'KCL_PM_2026':'kPm7Qx2-vR1a','KCL_PD_2026':'pD4nW8s-tL0e','LSE_DA_2026':'dA9cJ3k-yZ6u','LSE_AI_2026':'aI2rB5m-qN7o','LSE_DM_2026':'dM6sF1x-hK3w','CAM_DS_2026':'cD8tV4p-gR2i','Career Playbooks':'cP1lE7z-mY5b'};
+const S_SCHED=['Pages','0.3 Schedule and classes'], S_CAL=['Internal documentation','Programme Calendar P3 2026'];
+
+const CONVS = [
+ {id:'c1',name:'Jonas Lindqvist',email:'jonas.lindqvist@example.com',a:'KCL_PM_2026',course:'KCL_PM_401: Employer Project_P326',cid:'1311',day:0,time:'14:12',cvid:'2241',
+  pv:'**Searching for course information** I need to check the programme calendar for the Employer Project deadline…',
+  msgs:[{w:'s',t:'When is the Employer Project final report due?'},
+   {w:'l',api:2,act:'Search',steps:['Searched course pages for "Employer Project final report due date"','Read: 0.3 Schedule and classes','Read: Programme Calendar P3 2026'],
+    h:'<p>The final report for the Employer Project is due on <b>Friday 6 November 2026 at 17:00 UK time</b>.</p><p>Submit it as a single PDF through the <b>Final report</b> assignment in Module 4. Your group presentation has a separate deadline, so check the schedule page for that date too.</p>',
+    src:[S_SCHED,S_CAL,['Assignments','Final report: Employer Project']],rate:null}],
+  csat:{stars:4,comment:''},esc:null,ses:{os:'Windows',br:'Microsoft Edge',res:'1920x1080',lang:'en-GB',loc:'GB',city:'Leeds'}},
+ {id:'c2',name:'Mei Tanaka',email:'mei.tanaka@example.com',a:'KCL_PM_2026',course:'KCL_PM_401: Employer Project_P326',cid:'1311',day:0,time:'11:40',cvid:'2238',
+  pv:'**Rereading for clarity** I need to compare the report deadline with the presentation week…',
+  msgs:[{w:'s',t:'Is the presentation deadline the same as the report deadline?'},
+   {w:'l',api:1,act:'Search',steps:['Searched course pages for "presentation deadline Employer Project"','Read: 0.3 Schedule and classes'],
+    h:'<p>No, they are different.</p><ul><li>The <b>written report</b> is due on <b>Friday 6 November 2026 at 17:00 UK time</b>.</li><li>The <b>group presentation</b> takes place in your live session in the week of <b>9 November 2026</b>.</li></ul>',
+    src:[S_SCHED],rate:'up'}],
+  csat:null,esc:null,ses:{os:'macOS',br:'Safari',res:'1440x900',lang:'en-GB',loc:'GB',city:'Brighton'}},
+ {id:'c5',name:'Lucas Moreau',email:'lucas.moreau@example.com',a:'LSE_DM_2026',course:'LSE_DM_101: The Essence of Digital Marketing_P326',cid:'1237',day:0,time:'09:31',cvid:'2230',
+  pv:'**Evaluating writing assignments** I need to find the KPI activity instructions for this course…',
+  msgs:[{w:'s',t:'Which KPI should I use for the email objective in the strategy activity?'},
+   {w:'l',api:2,act:'Search',steps:['Searched course pages for "KPI email objective"','Read: 1.3.4 Assignment activity: Defining KPIs'],
+    h:'<p>For an objective like <b>increase email click-through rate by 3%</b>, the most direct KPI is the <b>email click-through rate (CTR)</b>.</p><p>Explain how you would measure it, for example through your email platform\'s analytics, and link it back to the objective.</p>',
+    src:[['Pages','1.3.4 Assignment activity: Defining KPIs']],rate:null}],
+  csat:{stars:5,comment:'Clear and to the point'},esc:null,ses:{os:'macOS',br:'Mozilla Firefox',res:'1440x824',lang:'fr-FR',loc:'FR',city:'Lyon'}},
+ {id:'c3',name:'Samuel Adeyemi',email:'samuel.adeyemi@example.com',a:'LSE_DA_2026',course:'LSE_DA_101: Data Analytics for Business_P326',cid:'1288',day:1,time:'19:05',cvid:'2214',
+  pv:'**Searching for course materials** I need to find the peer review stage dates…',
+  msgs:[{w:'s',t:'What is the deadline for Stage 2 of the peer review?'},
+   {w:'l',api:2,act:'Search',steps:['Searched course pages for "Stage 2 peer review deadline"','Read: 0.2 Assignment overview'],
+    h:'<p>Stage 2 of the peer review is due on <b>Monday 26 October 2026 at 17:00 UK time</b>.</p><p>In Stage 2 you give feedback on two classmates\' work. Your reviews open once Stage 1 has closed.</p>',
+    src:[['Pages','0.2 Assignment overview'],S_SCHED],rate:null}],
+  csat:null,esc:null,ses:{os:'Windows',br:'Google Chrome',res:'1366x768',lang:'en-GB',loc:'GB',city:'Manchester'}},
+ {id:'c4',name:'Priya Nair',email:'priya.nair@example.com',a:'LSE_AI_2026',course:'LSE_AI_201: Going from Vision to Value_P226',cid:'1254',day:1,time:'09:22',cvid:'2207',
+  pv:'**Considering answer structure** I need to check the references page the student is viewing…',
+  msgs:[{w:'s',t:'Where is there a reference to Floridi?'},
+   {w:'l',api:1,act:'Read Source',steps:['Read: Module 1 references (the page the student is on)'],
+    h:'<p>I checked the <b>Module 1 references</b> page and couldn\'t find a reference to "Floridi". Could the name be spelled differently, or is it in another module?</p>',
+    src:[['Pages','Module 1 references']],rate:null},
+   {w:'s',t:'Check all the course pages, not just this one.'},
+   {w:'l',api:2,act:'Search',steps:['Searched course pages for "Floridi"','No matching course pages found'],
+    h:'<p>I couldn\'t find a reference to Floridi in the course pages I can search from here.</p><p>Would you like me to pass your question to the <b>LSE AI Help Desk</b>?</p>',
+    src:[['Pages','Module 1 references'],['FAQ','How is the programme structured?']],rate:'down'},
+   {w:'s',t:'Yes please'},
+   {w:'l',api:1,act:'Escalate',steps:['Created a help desk case for LSE AI Help Desk'],
+    h:'<p>Done. I\'ve passed your question to the <b>LSE AI Help Desk</b>. They\'ll reply to you by email.</p>',src:[],rate:null}],
+  csat:{stars:1,comment:'It couldn\'t find the reference'},esc:{hd:'LSE AI Help Desk',via:'Student accepted LUMA\'s offer'},ses:{os:'Windows',br:'Google Chrome',res:'1920x1080',lang:'en-GB',loc:'GB',city:'London'}},
+ {id:'c6',name:'Hannah Schmidt',email:'hannah.schmidt@example.com',a:'LSE_DA_2026',course:'LSE_DA_301: Machine Learning for Business_P226',cid:'1290',day:4,time:'21:48',cvid:'2163',
+  pv:'**Reading the error message** I need to explain what a KeyError means in pandas…',
+  msgs:[{w:'s',t:'I get KeyError: \'Revenue\' when I run my model. What\'s wrong?'},
+   {w:'l',api:1,act:'Search',steps:['Searched course pages for "KeyError pandas"','Read: 3.2 Preparing your data'],
+    h:'<p>A <b>KeyError</b> means pandas can\'t find a column called <code>Revenue</code> in your DataFrame.</p><ul><li>Run <code>df.columns</code> to see the exact column names.</li><li>Check for spaces or a different capital letter, such as <code>revenue</code>.</li></ul>',
+    src:[['Pages','3.2 Preparing your data']],rate:'down'}],
+  csat:null,esc:null,ses:{os:'Windows',br:'Google Chrome',res:'1920x1200',lang:'de-DE',loc:'DE',city:'Hamburg'}},
+ {id:'c7',name:'Diego Ramírez',email:'diego.ramirez@example.com',a:'CAM_DS_2026',course:'CAM_DS_201: Applied Machine Learning_P326',cid:'1402',day:4,time:'08:15',cvid:'2158',
+  pv:'**Checking module availability** I need to find the release date for Module 3…',
+  msgs:[{w:'s',t:'Module 3 is still locked. Should I be able to see it?'},
+   {w:'l',api:1,act:'Search',steps:['Searched course pages for "Module 3 release date"','Read: Course schedule'],
+    h:'<p>According to the course schedule, Module 3 opens on <b>Monday 12 October 2026</b>, so it should be open now.</p><p>Would you like me to pass this to the <b>CAM Data Science Help Desk</b>?</p>',
+    src:[['Pages','Course schedule']],rate:null},
+   {w:'s',t:'Yes, it should be open by now.'},
+   {w:'l',api:1,act:'Escalate',steps:['Created a help desk case for CAM Data Science Help Desk'],
+    h:'<p>I\'ve passed this to the <b>CAM Data Science Help Desk</b>. They\'ll get back to you by email.</p>',src:[],rate:null}],
+  csat:null,esc:{hd:'CAM Data Science Help Desk',via:'Student accepted LUMA\'s offer'},ses:{os:'Linux',br:'Google Chrome',res:'1920x1080',lang:'es-ES',loc:'ES',city:'Valencia'}},
+ {id:'c8',name:'Aisha Rahman',email:'aisha.rahman@example.com',a:'Career Playbooks',course:'Career Playbooks',cid:'1500',day:9,time:'13:02',cvid:'2102',
+  pv:'**Searching for course information** I need to find how students book careers coaching…',
+  msgs:[{w:'s',t:'How do I book a careers coaching session?'},
+   {w:'l',api:1,act:'Search',steps:['Searched course pages for "book careers coaching"','Read: Book a coaching session'],
+    h:'<p>Go to <b>Book a coaching session</b> in the Career Playbooks course and choose a time that suits you. Each session is 30 minutes, online.</p>',
+    src:[['Pages','Book a coaching session']],rate:'up'}],
+  csat:{stars:5,comment:'Quick and clear'},esc:null,ses:{os:'iOS',br:'Safari',res:'390x844',lang:'en-GB',loc:'AE',city:'Dubai'}},
+ {id:'c9',name:'Tom Whitfield',email:'tom.whitfield@example.com',a:'KCL_PD_2026',course:'KCL_PD_201: Designing for Users_P326',cid:'1322',day:15,time:'17:44',cvid:'2011',
+  pv:'**Checking policy pages** I need to find the extension request process…',
+  msgs:[{w:'s',t:'Can I get an extension on the deadline for my portfolio?'},
+   {w:'l',api:1,act:'Search',steps:['Searched course pages for "extension request"','No matching course pages found'],
+    h:'<p>I couldn\'t find information about portfolio extensions in your course. Your facilitator or the Student Success team can help with this.</p>',
+    src:[],rate:null}],
+  csat:null,esc:null,ses:{os:'Windows',br:'Microsoft Edge',res:'1536x864',lang:'en-GB',loc:'GB',city:'Bristol'}},
+ {id:'c10',name:'User 4f2a91c0-77de-4b1e-9a3c-0d5e8f61b2aa',email:'Not logged in',a:'LSE_DA_2026',course:'LSE_DA_101: Data Analytics for Business_P326',cid:'1288',day:26,time:'10:10',cvid:'1874',
+  pv:'**Searching for course materials** I need to find the Tableau download guide…',
+  msgs:[{w:'s',t:'Where do I download Tableau?'},
+   {w:'l',api:1,act:'Search',steps:['Searched course pages for "download Tableau"','Read: Tools you need'],
+    h:'<p>Follow the steps on the <b>Tools you need</b> page. It links to the free Tableau Public download and shows how to sign in.</p>',
+    src:[['Pages','Tools you need']],rate:null}],
+  csat:null,esc:null,ses:{os:'Windows',br:'Google Chrome',res:'1366x768',lang:'en-GB',loc:'GB',city:'Leicester'}}
+];
+CONVS.forEach(c=>{
+  c.ini = c.name.startsWith('User ') ? 'U4' : c.name.split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
+  c.text = [c.name,c.email,c.pv,...c.msgs.map(m=>(m.t||m.h||'').replace(/<[^>]+>/g,' '))].join(' ').toLowerCase();
+  c.sort = c.day*10000 - Number(c.time.replace(':',''));
+});
+CONVS.sort((a,b)=>a.sort-b.sort);
+const COURSES = [...new Set(CONVS.map(c=>c.course))].sort();
+const byId = id => CONVS.find(c=>c.id===id);
+
+/* ---------- made-up data: improvements ---------- */
+const STATUSES = ['To do','In Progress','In Review','Done','Archived'];
+const IMPS = [
+ {id:'LW-148',t:'No course answer for portfolio extension question',s:'To do',tags:['Auto-Generated','Unanswered Question'],p:'None',who:'N/A',due:'',a:'KCL_PD_2026',created:'19 Oct 2026',upd:'2 days ago',auto:'19 Oct 26 17:46',conv:'c9',m:[0,1],
+  d:'A student asked whether they can get an extension on their portfolio deadline. Search found no matching course pages, so LUMA could only point them to their facilitator. Add the extension and deferral process to the KCL PD course so LUMA can answer this directly.'},
+ {id:'LW-147',t:'Module 3 still locked for CAM DS students',s:'To do',tags:['Escalation'],p:'High',who:'N/A',due:'',a:'CAM_DS_2026',created:'17 Oct 2026',upd:'4 days ago',auto:'17 Oct 26 08:16',conv:'c7',m:[0,1],
+  d:'A student reported that Module 3 was still locked after its release date of 12 October and was passed to the CAM Data Science Help Desk. Check the module release settings in Canvas.'},
+ {id:'LW-145',t:'Stage 2 peer review date unclear',s:'To do',tags:['Auto-Generated','Unanswered Question'],p:'None',who:'N/A',due:'',a:'LSE_DA_2026',created:'16 Oct 2026',upd:'5 days ago',auto:'16 Oct 26 19:06',conv:'c3',m:[0,1],
+  d:'Students ask when Stage 2 of the peer review is due. The date appears on two pages with slightly different wording. Use one page as the source for this date.'},
+ {id:'LW-142',t:'Author references across AI Courses 1–4',s:'To do',tags:['Escalation'],p:'None',who:'N/A',due:'',a:'LSE_AI_2026',created:'15 Oct 2026',upd:'6 days ago',auto:'15 Oct 26 09:24',conv:'c4',m:[2,3],
+  d:'A student asked where the author Floridi is referenced. LUMA searched only from the Course 2 references page and said it couldn\'t find the author, but Floridi is cited in Course 1, Module 3. The student gave one star and was passed to the help desk. An author index across Courses 1–4 would let LUMA answer "where is this covered?" questions.'},
+ {id:'LW-140',t:'Student Community - Ask Success Team',s:'To do',tags:['Escalation'],p:'None',who:'N/A',due:'',a:'LSE_DA_2026',created:'14 Oct 2026',upd:'7 days ago',auto:'14 Oct 26 11:02',conv:'c10',m:[0,1],
+  d:'A student asked to contact the Student Success team through LUMA. Check that the Ask Success Team link is visible in the Student Community.'},
+ {id:'LW-131',t:'Tableau download link missing',s:'In Progress',tags:['Auto-Generated','Unanswered Question'],p:'Medium',who:'LT',due:'2026-10-28',a:'LSE_DA_2026',created:'6 Oct 2026',upd:'1 day ago',auto:'06 Oct 26 10:11',conv:'c10',m:[0,1],
+  d:'Students can\'t find where to download Tableau. The Tools you need page is being updated with a direct link and sign-in steps.'},
+ {id:'LW-129',t:'Careers coaching booking link',s:'In Progress',tags:['Escalation'],p:'Low',who:'CC',due:'2026-10-30',a:'Career Playbooks',created:'2 Oct 2026',upd:'3 days ago',auto:'02 Oct 26 13:03',conv:'c8',m:[0,1],
+  d:'Some students reached a help desk because the booking page link had moved. The Career Coaching team is checking every link.'},
+ {id:'LW-127',t:'Module release dates: CAM DS',s:'In Review',tags:['Escalation'],p:'Medium',who:'LT',due:'2026-10-23',a:'CAM_DS_2026',created:'29 Sep 2026',upd:'2 days ago',auto:'29 Sep 26 08:40',conv:'c7',m:[0,1],
+  d:'The course schedule page has been updated with the correct release dates. Ask LUMA again to check the answer is now right.'},
+ {id:'LW-139',t:'KCL PM Employer Project dates',s:'Done',tags:['Auto-Generated','Unanswered Question'],p:'None',who:'LT',due:'',a:'KCL_PM_2026',created:'12 Oct 2026',upd:'3 days ago',auto:'12 Oct 26 14:20',conv:'c1',m:[0,1],
+  d:'The schedule page now lists the report deadline and the presentation week separately. LUMA gives the right dates.'},
+ {id:'LW-120',t:'Missing deferral policy sources',s:'Done',tags:['Auto-Generated','Unanswered Question'],p:'None',who:'N/A',due:'',a:'KCL_PD_2026',created:'21 Sep 2026',upd:'3 weeks ago',auto:'21 Sep 26 16:02',conv:'c9',m:[0,1],
+  d:'The deferral policy page was added to the knowledge base.'}
+];
+const impById = id => IMPS.find(x=>x.id===id);
+const WHO = {'N/A':'Not assigned','LT':'Learning Technology','CC':'Career Coaching','YOU':'You'};
+
+/* ---------- made-up data: insights ---------- */
+const CONV_DAY = [34,38,31,40,36,37,52,63,55,44,41,43,40,46,42,39,37,45,54,61,57,49,44,42,50,64,71,68,55,43,28];
+const ESC_DAY  = [0,1,0,0,1,0,0,1,0,0,0,1,0,0,0,0,1,0,2,1,0,0,0,1,0,1,2,1,0,1,0];
+const SUM = a => a.reduce((x,y)=>x+y,0);
+const TOTAL_CONV = SUM(CONV_DAY), TOTAL_ESC = SUM(ESC_DAY);
+const TRENDS = [
+ {id:'t1',name:'KCL PM – October 2026',gen:'21 Oct 26 09:12',range:'01 Oct 2026 - 21 Oct 2026',themes:[
+  {n:46,t:'Employer Project deadlines and submission format',d:'Students ask when the final report and group presentation are due, whether they submit one file or two, and how files should be named. Most answers come from the schedule page and the programme calendar.'},
+  {n:31,t:'Live session times and recordings',d:'Questions about when live sessions happen in UK time, how to join, and where recordings appear afterwards.'},
+  {n:19,t:'Group work, team charter and the NDA',d:'Students ask what the team charter must include, who signs the NDA, and what to do if a group member is inactive.'}]},
+ {id:'t2',name:'LSE DA – September 2026',gen:'30 Sep 26 16:40',range:'01 Sep 2026 - 30 Sep 2026',themes:[
+  {n:58,t:'Peer review stages and deadlines',d:'Students ask when each peer review stage opens and closes, and how many classmates they review.'},
+  {n:37,t:'Installing Tableau and Excel add-ins',d:'Questions about downloading Tableau Public, signing in, and enabling the Excel Analysis ToolPak.'},
+  {n:22,t:'Locked or missing modules',d:'Students report modules they expected to see. Several were not yet released, and a few were locked by mistake.'}]}
+];
+
+/* ---------- state ---------- */
+let S;
+const freshFilters = () => ({assistant:'all',date:'30',course:'all',feedback:'all',escalation:'all',csat:'all'});
+const freshImpFilters = () => ({tag:'all',priority:'all',assistant:'all'});
+function freshState(){
+  return {screen:'inbox',insSub:'insights',
+    search:'',filters:freshFilters(),openId:null,thoughts:{},sources:{},detailsHidden:false,improveFor:null,improveMode:null,linkQ:'',links:{},
+    panel:null,menu:null,modal:null,logOpen:null,
+    impSearch:'',impFilters:freshImpFilters(),impSel:null,collapsed:{},
+    trendSel:'t1',chartTable:false,
+    exports:{
+      inbox:[{id:'x0',name:'KCL PM weekly conversations',type:'CSV',anon:true,by:'A colleague',created:'Mon Oct 19 2026',status:'Ready',filters:'Assistant: KCL_PM_2026 · Last 7 days'}],
+      imp:[{id:'y0',name:'Open improvements – October',type:'CSV',by:'A colleague',created:'Tue Oct 20 2026',status:'Ready',filters:'Statuses: To do, In Progress'}],
+      ins:[{id:'z0',name:'LSE DA September numbers',type:'XLSX',kind:'Aggregated insights',by:'A colleague',created:'Thu Oct 1 2026',status:'Ready',filters:'Assistant: LSE_DA_2026 · Daily'}]
+    }};
+}
+S = freshState();
+
+function visibleConvs(){
+  const f = S.filters, q = S.search.trim().toLowerCase();
+  return CONVS.filter(c=>{
+    if (f.date==='1' && c.day!==0) return false;
+    if (f.date==='7' && c.day>7) return false;
+    if (f.assistant!=='all' && c.a!==f.assistant) return false;
+    if (f.course!=='all' && c.course!==f.course) return false;
+    const hasFb = !!c.csat || c.msgs.some(m=>m.rate);
+    if (f.feedback==='has' && !hasFb) return false;
+    if (f.feedback==='none' && hasFb) return false;
+    if (f.escalation==='yes' && !c.esc) return false;
+    if (f.escalation==='no' && c.esc) return false;
+    if (f.csat!=='all' && (!c.csat || String(c.csat.stars)!==f.csat)) return false;
+    if (q && !c.text.includes(q)) return false;
+    return true;
+  });
+}
+function visibleImps(){
+  const f=S.impFilters, q=S.impSearch.trim().toLowerCase();
+  return IMPS.filter(x=>{
+    if (f.tag!=='all' && !x.tags.includes(f.tag)) return false;
+    if (f.priority!=='all' && x.p!==f.priority) return false;
+    if (f.assistant!=='all' && x.a!==f.assistant) return false;
+    if (q && !(x.id+' '+x.t+' '+x.d).toLowerCase().includes(q)) return false;
+    return true;
+  });
+}
+
+/* ---------- shared bits ---------- */
+const app = document.getElementById('app');
+const opt = (v,l,sel)=>`<option value="${esc(v)}" ${sel===v?'selected':''}>${esc(l)}</option>`;
+const dead = l => `<select disabled><option>${esc(l)}</option></select>`;
+
+function sidebarHTML(){
+  const on = k => (S.screen===k || (k==='improvements'&&S.screen==='improvement')) ? 'class="on" aria-current="page"' : '';
+  return `<aside class="side">
+    <div class="logo">LUMA <small>Practice</small></div>
+    <nav class="nav" aria-label="LUMA menu">
+      <button ${on('inbox')} data-a="go" data-k="inbox">${ic('inbox',17)} Inbox</button>
+      <button ${on('improvements')} data-a="go" data-k="improvements">${ic('wand',17)} Improvements</button>
+      <button ${on('insights')} data-a="go" data-k="insights">${ic('chart',17)} Insights</button>
+    </nav>
+    <div class="sbottom">
+      <div class="sb-item">${ic('help',17)} Support</div>
+      <div class="sb-box"><span class="av" style="background:#3b46a8">FR</span><span>FourthRev</span></div>
+      <div class="sb-box"><span class="av">Y</span><span>You<small>practice account</small></span></div>
+    </div>
+  </aside>`;
+}
+function exportsMenuHTML(area){
+  return S.menu===area ? `<div class="menu"><button data-a="createExport" data-k="${area}">Create export</button><button data-a="viewExports" data-k="${area}">View exports</button></div>` : '';
+}
+function render(){
+  let main='';
+  if (S.screen==='inbox') main = inboxHTML();
+  else if (S.screen==='improvements') main = impListHTML();
+  else if (S.screen==='improvement') main = impDetailHTML();
+  else main = insightsHTML();
+  app.innerHTML = sidebarHTML() + main + modalHTML();
+  applySpot();
+}
+
+/* ---------- inbox ---------- */
+function chipsHTML(removable){
+  const f=S.filters, out=[];
+  out.push(`<span class="chip"><b>Date Range:</b> ${RANGE[f.date]} ${ic('info',13)}</span>`);
+  const add=(label,val,key)=>out.push(`<span class="chip"><b>${label}:</b> ${esc(val)}${removable?` <button data-a="chipx" data-k="${key}" aria-label="Remove ${label} filter">${ic('x',12)}</button>`:''}</span>`);
+  if (S.search) add('Search',S.search,'search');
+  if (f.assistant!=='all') add('Assistant',f.assistant,'assistant');
+  if (f.course!=='all') add('Course',f.course,'course');
+  if (f.feedback!=='all') add('Feedback',f.feedback==='has'?'Has feedback':'No feedback','feedback');
+  if (f.escalation!=='all') add('Escalation',f.escalation==='yes'?'Escalated':'Not escalated','escalation');
+  if (f.csat!=='all') add('CSAT',f.csat+' star'+(f.csat==='1'?'':'s'),'csat');
+  return out.join('');
+}
+function inboxHTML(){
+  const list = visibleConvs();
+  const open = S.openId ? byId(S.openId) : null;
+  return `<section class="main">
+    <div class="topbar">
+      <div><h2>Inbox</h2><div class="chips">${chipsHTML(true)}</div></div>
+      <div class="tools" id="inboxTools">
+        <form class="search" id="searchForm" role="search">${ic('search',15)}
+          <input id="q" type="search" placeholder="Search conversations..." value="${esc(S.search)}" aria-label="Search conversations" autocomplete="off">
+        </form>
+        <button class="tbtn" data-a="panel" data-k="inbox" aria-expanded="${S.panel==='inbox'}">${ic('filter',15)} Filters</button>
+        <div style="position:relative"><button class="tbtn" id="btnExports" data-a="menu" data-k="inbox" aria-expanded="${S.menu==='inbox'}">${ic('download',15)} Exports ${ic('chev',14)}</button>${exportsMenuHTML('inbox')}</div>
+      </div>
+    </div>
+    <div class="body ${S.detailsHidden?'nodetails':''}">
+      <div class="list inset" id="convList">
+        <div class="listhead">Conversation log <span class="cnt">${list.length}</span></div>
+        ${convListHTML(list)}
+        <button class="loadmore" data-a="toast" data-k="All practice conversations are already showing.">Load more</button>
+      </div>
+      <div class="conv inset" id="convPane">${open?convHTML(open):`<div class="convempty"><div>${ic('inbox',28)}<p>Select a conversation to read it.</p></div></div>`}</div>
+      <aside class="details inset" id="details" aria-label="Conversation details">${open?detailsHTML(open):''}</aside>
+    </div>
+    ${S.panel==='inbox'?inboxFiltersHTML():''}
+  </section>`;
+}
+function convListHTML(list){
+  if (!list.length) return `<div class="empty">${ic('search',22)}<p>No conversations match these filters.</p><button class="freset" data-a="resetInbox">Clear search and filters</button></div>`;
+  let html='', last=null;
+  list.forEach(c=>{
+    const g = c.day===0?'Today':c.day===1?'Yesterday':fmt(dayDate(c.day));
+    if (g!==last){ html+=`<div class="group">${g}</div>`; last=g; }
+    html+=`<button class="card ${S.openId===c.id?'on':''}" data-a="open" data-id="${c.id}">
+      <span class="av">${c.ini}</span>
+      <span style="min-width:0"><span class="nm">${esc(c.name)}</span><span class="pv">${esc(c.pv)}</span><span class="pill">${esc(c.course)}</span><span class="dt">${fmt(dayDate(c.day))}</span></span></button>`;
+  });
+  return html;
+}
+function messageHTML(c, m, i, interactive){
+  const key = c.id+'-'+i;
+  if (m.w==='s') return `<div class="srow"><span class="av">${c.ini}</span><div class="bubble">${esc(m.t)}</div></div>`;
+  const thoughtOpen = interactive && S.thoughts[key], srcOpen = interactive && S.sources[key];
+  return `<div class="wf"><span><i class="dot go"></i>Workflow triggered: Default Behavior</span></div>
+  <div class="luma">
+    <button class="thought" ${interactive?`data-a="thought" data-k="${key}"`:''} aria-expanded="${!!thoughtOpen}">
+      <span class="api">API × ${m.api}</span> Thought <span class="act">${m.act}</span> ${ic('chev',16)}
+    </button>
+    ${thoughtOpen?`<ol class="steps">${m.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`:''}
+    <div class="answer">${m.h}</div>
+    ${interactive && S.links[key]?`<div class="linked">${ic('link',14)} Linked to ${S.links[key].id} · ${esc(S.links[key].t)}</div>`:''}
+    <div><span class="imprwrap">
+      <button class="btn-improve" ${interactive?`data-a="improve" data-k="${key}"`:'data-a="toast" data-k="Use this to attach another reply to an improvement."'} data-improve="${key}" aria-expanded="${S.improveFor===key}">${ic('wand',15)} Improve Answer</button>
+      ${interactive && S.improveFor===key?improvePopHTML(key):''}
+    </span></div>
+    <div class="srcrow">
+      ${interactive?`<button class="btn-src" data-a="sources" data-k="${key}" data-src="${key}" aria-expanded="${!!srcOpen}">Sources</button>`:''}
+      <span class="rule"></span>
+      <button class="ib" data-a="toast" data-k="Answer copied (practice)." aria-label="Copy answer">${ic('copy',15)}</button>
+      <button class="ib ${m.rate==='up'?'up-on':''}" data-a="toast" data-k="The thumbs show the student's rating of this answer." aria-label="Thumbs up">${ic('up',15)}</button>
+      <button class="ib ${m.rate==='down'?'down-on':''}" data-a="toast" data-k="The thumbs show the student's rating of this answer." aria-label="Thumbs down">${ic('down',15)}</button>
+    </div>
+    ${srcOpen?(m.src.length?`<div class="srclist">${m.src.map(s=>`<div><span class="srctype">${esc(s[0])}</span><span>${esc(s[1])}</span></div>`).join('')}</div>`:`<div class="srclist"><span class="nosrc">No sources. LUMA didn't use course content for this reply.</span></div>`):''}
+  </div>
+  <div class="wf"><span><i class="dot"></i>Workflow ended: Default Behavior</span></div>`;
+}
+function convHTML(c){
+  let h = `<div class="chead">
+      <span class="av">${c.ini}</span>
+      <div class="who"><b>${esc(c.name)}</b><span>${esc(c.email)}${c.email.includes('@')?' • StudentEnrollment':''}</span></div>
+      <span class="idchip">ID 1601200000000${c.cvid}</span>
+      <button class="panelbtn" data-a="togglePanel" aria-label="${S.detailsHidden?'Show':'Hide'} details panel">${ic('panel',17)}</button>
+    </div>
+    <div class="meta">${c.msgs.length+1} Messages • ${fmt(dayDate(c.day))}</div>`;
+  c.msgs.forEach((m,i)=>{ h += messageHTML(c,m,i,true); });
+  if (c.csat){
+    const st = '★'.repeat(c.csat.stars) + `<span class="off">${'★'.repeat(5-c.csat.stars)}</span>`;
+    h += `<div class="fb"><span class="lbl">Student feedback</span><span class="stars" aria-label="${c.csat.stars} out of 5 stars">${st}</span>${c.csat.comment?`<q>${esc(c.csat.comment)}</q>`:'<span class="sub">No written comment</span>'}</div>`;
+  }
+  return h;
+}
+function improvePopHTML(key){
+  if (S.improveMode==='link'){
+    return `<div class="pop" id="impPop"><b style="font-size:13px">Link existing improvement</b>
+      <input id="lwq" placeholder="Type LW to search" value="${esc(S.linkQ)}" aria-label="Search improvements" autocomplete="off">
+      <div class="lwres" id="lwres">${lwResults(S.linkQ.trim().toLowerCase())}</div>
+      <button class="linkbtn" data-a="improveBack">← Back</button></div>`;
+  }
+  if (S.improveMode==='create'){
+    return `<div class="pop" id="impPop"><b style="font-size:13px">Create new improvement</b>
+      <p class="pophint">This adds a new item to <b>To do</b> in Improvements, with this reply attached.</p>
+      <div style="display:flex;gap:8px"><button class="b dark" data-a="improveCreateConfirm" data-k="${key}">Create improvement</button><button class="b" data-a="improveBack">Back</button></div></div>`;
+  }
+  return `<div class="pop" id="impPop">
+    <button class="popt" data-a="improveMode" data-k="create"><b>Create new improvement</b><span>The problem isn't logged yet.</span></button>
+    <button class="popt" data-a="improveMode" data-k="link"><b>Link existing improvement</b><span>The same problem is already logged.</span></button></div>`;
+}
+function lwResults(q){
+  if (!q) return `<p class="pophint">Type <b>LW</b> to see improvements.</p>`;
+  const r = IMPS.filter(x=>(x.id+' '+x.t).toLowerCase().includes(q));
+  if (!r.length) return `<p class="pophint">No improvements match. Try LW.</p>`;
+  return r.map(x=>`<button class="lw" data-a="pickLW" data-id="${x.id}"><span class="id">${x.id}</span><span>${esc(x.t)}</span><span class="st">${x.s}</span></button>`).join('');
+}
+function detailsHTML(c){
+  const d = dayDate(c.day);
+  const F = (label,val,cls='',extra='')=>`<div class="df ${cls}"><span class="k">${label}</span><span class="v ${extra}">${esc(val)}</span></div>`;
+  return `<div class="dcard"><h3>Conversation details</h3><div class="kv">
+      ${F('Assistant',c.a,'wide','link')}${F('Assistant ID',AID[c.a]||'xX0xX0x-xX0x')}${F('Timestamp',`${MN[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}, ${c.time}`)}${F('Course',c.course)}${F('Course ID',c.cid)}
+    </div></div>
+    <div class="dcard"><h3>Session</h3><div class="kv">
+      ${F('Launch URL',`https://fourthrev.instructure.com/courses/${c.cid}/…`,'wide')}${F('IP address','Hidden in practice')}${F('OS',c.ses.os)}${F('Browser',c.ses.br)}${F('Resolution',c.ses.res)}${F('Language',c.ses.lang)}${F('Location',c.ses.loc)}${F('City',c.ses.city)}
+    </div></div>
+    <div class="dcard"><h3>Escalation</h3><div class="kv">
+      <div class="df wide"><span class="k">Status</span><span class="v ${c.esc?'esc-on':''}">${c.esc?'Escalated':'Not escalated'}</span></div>
+      ${c.esc?`<div class="df wide"><span class="k">Help desk</span><span class="v">${esc(c.esc.hd)}</span></div><div class="df wide"><span class="k">How</span><span class="v">${esc(c.esc.via)}</span></div>`:''}
+    </div></div>`;
+}
+function inboxFiltersHTML(){
+  const f=S.filters;
+  return `<div class="filters" role="dialog" aria-label="Filters">
+    <div class="fhead"><b>Filters</b><button data-a="panelClose">${ic('x',14)} Close</button></div>
+    <label class="fl">Date Range<select data-f="date">${opt('30','Last 30 days',f.date)}${opt('7','Last 7 days',f.date)}${opt('1','Today',f.date)}</select></label>
+    <label class="fl">Assistants<select data-f="assistant">${opt('all','All Assistants',f.assistant)}${ASSISTANTS.map(a=>opt(a,a,f.assistant)).join('')}</select></label>
+    <label class="fl">Courses<select data-f="course">${opt('all','All Courses',f.course)}${COURSES.map(a=>opt(a,a,f.course)).join('')}</select></label>
+    <label class="fl">Channels${dead('All Channels')}</label>
+    <label class="fl">Help Desks${dead('All Help Desks')}</label>
+    <label class="fl">Languages${dead('All Languages')}</label>
+    <label class="fl">Workflows${dead('All Workflows')}</label>
+    <label class="fl">Roles${dead('All Roles')}</label>
+    <p class="fnote">Greyed-out filters work in LUMA but aren't used in this practice copy.</p>
+    <div class="fsec">Feedback &amp; escalation</div>
+    <label class="fl">Feedback<select data-f="feedback">${opt('all','All Feedbacks',f.feedback)}${opt('has','Has feedback',f.feedback)}${opt('none','No feedback',f.feedback)}</select></label>
+    <label class="fl">Escalation<select data-f="escalation">${opt('all','All Escalations',f.escalation)}${opt('yes','Escalated',f.escalation)}${opt('no','Not escalated',f.escalation)}</select></label>
+    <label class="fl">CSAT Scores<select data-f="csat">${opt('all','All scores',f.csat)}${['1','2','3','4','5'].map(n=>opt(n,n+' star'+(n==='1'?'':'s'),f.csat)).join('')}</select></label>
+    <button class="freset" data-a="resetInbox">Reset filters</button>
+  </div>`;
+}
+
+/* ---------- improvements ---------- */
+function impToolsHTML(){
+  return `<div class="tools" id="impTools">
+    <form class="search" id="impSearchForm" role="search">${ic('search',15)}
+      <input id="iq" type="search" placeholder="Search improvements..." value="${esc(S.impSearch)}" aria-label="Search improvements" autocomplete="off">
+    </form>
+    <button class="tbtn" data-a="panel" data-k="imp" aria-expanded="${S.panel==='imp'}">${ic('filter',15)} Filters</button>
+    <div style="position:relative"><button class="tbtn" data-a="menu" data-k="imp" aria-expanded="${S.menu==='imp'}">${ic('download',15)} Export ${ic('chev',14)}</button>${exportsMenuHTML('imp')}</div>
+  </div>`;
+}
+function prioHTML(p){
+  if (p==='High') return '<span class="prio high" title="High priority">!!!</span>';
+  if (p==='Medium') return '<span class="prio high" style="color:var(--amber)" title="Medium priority">!!</span>';
+  if (p==='Low') return '<span class="prio" title="Low priority">!</span>';
+  return '<span class="prio" title="No priority">···</span>';
+}
+function impListHTML(){
+  const list = visibleImps();
+  const groups = STATUSES.map(s=>{
+    const rows = list.filter(x=>x.s===s);
+    const open = !S.collapsed[s];
+    return `<div class="grp">
+      <div class="ghead"><button class="tog" data-a="toggleGroup" data-k="${s}" aria-expanded="${open}">${ic('chev',16)} ${s}</button><span class="gcount">${rows.length}</span>
+        <button class="gexp" data-a="toast" data-k="Export report downloads this status group as a file. Practice copy: nothing downloads.">Export report</button></div>
+      ${open?rows.map(x=>`<button class="irow" data-a="openImp" data-id="${x.id}">
+        <span class="lwid">${x.id}</span>${prioHTML(x.p)}<span class="ititle">${esc(x.t)}</span>
+        <span class="idate">Created ${x.created} <span style="color:var(--muted)">(Updated ${x.upd})</span></span>
+        <span class="tags">${x.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</span>
+        <span class="whoav" title="${WHO[x.who]}">${x.who}</span></button>`).join(''):''}
+    </div>`;
+  }).join('');
+  return `<section class="main">
+    <div class="topbar"><div><h2>Improvements</h2></div>${impToolsHTML()}</div>
+    <div class="imp inset" id="impList">${groups}</div>
+    ${S.panel==='imp'?impFiltersHTML():''}
+  </section>`;
+}
+function impFiltersHTML(){
+  const f=S.impFilters;
+  return `<div class="filters" role="dialog" aria-label="Filters">
+    <div class="fhead"><b>Filters</b><button data-a="panelClose">${ic('x',14)} Close</button></div>
+    <label class="fl">Tags<select data-if="tag">${opt('all','All tags',f.tag)}${['Auto-Generated','Unanswered Question','Escalation'].map(t=>opt(t,t,f.tag)).join('')}</select></label>
+    <label class="fl">Assigned to${dead('All administrators')}</label>
+    <label class="fl">Priority<select data-if="priority">${opt('all','All priorities',f.priority)}${['High','Medium','Low','None'].map(t=>opt(t,t,f.priority)).join('')}</select></label>
+    <label class="fl">Assistants<select data-if="assistant">${opt('all','All Assistants',f.assistant)}${ASSISTANTS.map(a=>opt(a,a,f.assistant)).join('')}</select></label>
+    <label class="fl">Courses${dead('All courses')}</label>
+    <button class="freset" data-a="resetImp">Reset filters</button>
+  </div>`;
+}
+function impDetailHTML(){
+  const x = impById(S.impSel) || IMPS[0];
+  const c = byId(x.conv);
+  const msgs = x.m.map(i=>messageHTML(c,c.msgs[i],i,false)).join('');
+  const lumaMsg = c.msgs[x.m[x.m.length-1]];
+  const src = (lumaMsg && lumaMsg.src) || [];
+  return `<section class="main" style="grid-template-rows:minmax(0,1fr)">
+    <div class="idet inset" id="impDetail">
+      <div class="ihead">
+        <div class="crumb"><button data-a="go" data-k="improvements">All Improvements</button> › <b>View Improvement Item</b></div>
+        <h2><span>${x.id}</span>${esc(x.t)}</h2>
+        <span class="sub">${x.tags.includes('Auto-Generated')?'Auto-generated':'Created'} on ${x.auto}</span>
+      </div>
+      <div class="igrid">
+        <div><b>Description</b><div class="desc">${esc(x.d)}</div></div>
+        <div class="imeta" id="imeta">
+          <span class="k">Status</span><select data-im="s" aria-label="Status">${STATUSES.map(s=>opt(s,s,x.s)).join('')}</select>
+          <span class="k">Tags</span><span class="tags" style="justify-content:flex-start">${x.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</span>
+          <span class="k">Priority</span><select data-im="p" aria-label="Priority">${['None','Low','Medium','High'].map(s=>opt(s,s,x.p)).join('')}</select>
+          <span class="k">Assigned to</span><select data-im="who" aria-label="Assigned to">${Object.keys(WHO).map(k=>opt(k,WHO[k],x.who)).join('')}</select>
+          <span class="k">Due Date</span><input type="date" data-im="due" value="${x.due}" aria-label="Due date">
+        </div>
+        <div class="assoc" id="assoc"><h3>Associated Messages</h3>${msgs}</div>
+        <div class="isrc"><h3>Sources</h3>${src.length?src.map(s=>`<div><span class="srctype">${esc(s[0])}</span><div>${esc(s[1])}</div></div>`).join(''):'<span class="nosrc">No sources</span>'}</div>
+      </div>
+    </div>
+  </section>`;
+}
+
+/* ---------- insights ---------- */
+function insightsHTML(){
+  const sub = S.insSub;
+  const subnav = `<nav class="subnav" aria-label="Insights pages">
+    ${['insights','trends','exports'].map(k=>`<button class="${sub===k?'on':''}" data-a="sub" data-k="${k}">${k[0].toUpperCase()+k.slice(1)}</button>`).join('')}
+  </nav>`;
+  const pane = sub==='insights' ? dashHTML() : sub==='trends' ? trendsHTML() : insExportsHTML();
+  return `<section class="main" style="grid-template-rows:minmax(0,1fr)"><div class="ins">${subnav}${pane}</div></section>`;
+}
+function metric(title,sub,val,opts={}){
+  return `<div class="metric"><h4>${title}</h4><span class="msub">${sub||'&nbsp;'}</span>
+    <div class="bigrow"><span class="big ${opts.good?'good':''}">${val}</span>${opts.vb?`<button class="vb" data-a="toast" data-k="${opts.vb}">View breakdown</button>`:''}</div></div>`;
+}
+function dashHTML(){
+  const res = (100 - TOTAL_ESC/TOTAL_CONV*100).toFixed(1);
+  const users = 312, answers = 5408, umsgs = 4196;
+  return `<div class="inspane">
+    <div class="topbar"><div><h2>Insights</h2><div class="chips"><span class="chip"><b>Date Range:</b> 2026-09-21 — 2026-10-21 ${ic('info',13)}</span></div></div>
+      <div class="tools" id="insTools">
+        <button class="tbtn" data-a="panel" data-k="ins" aria-expanded="${S.panel==='ins'}">${ic('filter',15)} Filters</button>
+        <button class="tbtn" data-a="createExport" data-k="ins">${ic('download',15)} Export</button>
+      </div></div>
+    <div class="insbody inset">
+      <div class="mgrid" id="metrics">
+        <div class="mrow r4">
+          ${metric('AI Resolution Rate','',res+' %',{good:1})}
+          ${metric('Answer Rating','19 positive and 3 negative','86 %',{good:1})}
+          ${metric(`${ic('chart',15)} Number of Conversations`,'',TOTAL_CONV.toLocaleString('en-GB'))}
+          ${metric('Escalated to Human','',TOTAL_ESC)}
+        </div>
+        <div class="mrow r3">
+          ${metric('Languages Spoken','','6',{vb:'Breakdown: English, French, German, Spanish, Arabic and Mandarin (practice numbers).'})}
+          ${metric('Number of AI Answers',`AI sent ${answers.toLocaleString('en-GB')} answers to ${umsgs.toLocaleString('en-GB')} user messages`,answers.toLocaleString('en-GB'))}
+          ${metric(`${ic('user',15)} Unique Users`,`${users} users engaged with assistant`,users)}
+        </div>
+        <div class="mrow r2">
+          ${metric('Conversations / User',`On average, each user started ${(TOTAL_CONV/users).toFixed(1)} conversations`,(TOTAL_CONV/users).toFixed(1))}
+          ${metric('Answers / Conversation','',(answers/TOTAL_CONV).toFixed(1))}
+        </div>
+        <div class="mrow r2">
+          ${metric('Shortcut button clicks','0 conversations started via shortcuts','0')}
+          ${metric('CSAT Survey','Based on 61 response(s)','4.3/5',{vb:'Breakdown: 5★ 38 · 4★ 12 · 3★ 4 · 2★ 2 · 1★ 5 (practice numbers).'})}
+        </div>
+      </div>
+      <div class="chartbox" id="chart">${chartHTML()}</div>
+      <p class="fnote">All numbers on this page are made up for practice.</p>
+    </div>
+    ${S.panel==='ins'?insFiltersHTML():''}
+  </div>`;
+}
+function chartHTML(){
+  const W=860,H=280,L=40,R=12,T=12,B=34;
+  const max = Math.ceil(Math.max(...CONV_DAY)/20)*20;
+  const x = i => L + i*(W-L-R)/(CONV_DAY.length-1);
+  const y = v => T + (H-T-B)*(1 - v/max);
+  const dlabel = i => { const d=new Date(2026,8,21+i); return `${d.getDate()} ${MN[d.getMonth()]}`; };
+  let g='';
+  for (let v=0; v<=max; v+=20){ g += `<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="#e8eaf1"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${v}</text>`; }
+  CONV_DAY.forEach((_,i)=>{ if(i%5===0||i===CONV_DAY.length-1){ g+=`<line x1="${x(i)}" x2="${x(i)}" y1="${T}" y2="${H-B}" stroke="#f0f1f6"/><text x="${x(i)}" y="${H-B+18}" text-anchor="middle">${dlabel(i)}</text>`; } });
+  const path = arr => arr.map((v,i)=>`${i?'L':'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+  const pts = (arr,col,label) => arr.map((v,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="2.6" fill="${col}"><title>${dlabel(i)}: ${v} ${label}</title></circle>`).join('');
+  const peak = CONV_DAY.indexOf(Math.max(...CONV_DAY));
+  const svg = `<svg class="tsvg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Conversations per day from 21 September to 21 October 2026, peaking at ${CONV_DAY[peak]} on ${dlabel(peak)}. Escalations stay between 0 and 2 a day.">
+    ${g}
+    <path d="${path(CONV_DAY)}" fill="none" stroke="var(--chart-1)" stroke-width="2"/>${pts(CONV_DAY,'var(--chart-1)','conversations')}
+    <path d="${path(ESC_DAY)}" fill="none" stroke="var(--chart-2)" stroke-width="2"/>${pts(ESC_DAY,'var(--chart-2)','escalations')}
+  </svg>`;
+  const legend = `<div class="legend"><span><i style="background:var(--chart-1)"></i>Conversations</span><span><i style="background:var(--chart-2)"></i>Escalation</span>
+    ${['AI answers','User messages','Unique users','Resolution rate','Answer rating'].map(l=>`<span class="muted"><i style="background:#d7d9e3"></i>${l}</span>`).join('')}</div>`;
+  const table = S.chartTable ? `<div class="tablewrap" style="max-height:220px"><table class="xtable"><thead><tr><th>Date</th><th>Conversations</th><th>Escalations</th></tr></thead><tbody>${CONV_DAY.map((v,i)=>`<tr><td>${dlabel(i)} 2026</td><td>${v}</td><td>${ESC_DAY[i]}</td></tr>`).join('')}</tbody></table></div>` : '';
+  return `<div class="chartwrap"><div>${svg}</div>${legend}</div>
+    <button class="textlink" style="justify-self:start;padding:0" data-a="chartTable">${ic('table',14)} ${S.chartTable?'Hide':'View'} data as table</button>${table}`;
+}
+function insFiltersHTML(){
+  return `<div class="filters" role="dialog" aria-label="Filters">
+    <div class="fhead"><b>Filters</b><button data-a="panelClose">${ic('x',14)} Close</button></div>
+    <label class="fl">Date Range<select><option>2026-09-21 — 2026-10-21</option><option>Last 7 days</option></select></label>
+    <label class="fl">Aggregated<select><option>Daily</option><option>Weekly</option><option>Monthly</option></select></label>
+    <label class="fl">Help Desks<select><option>All Help Desks</option></select></label>
+    <label class="fl">Feedback<select><option>All Feedbacks</option></select></label>
+    <label class="fl">Escalation<select><option>All Escalations</option></select></label>
+    <label class="fl">Assistants<select><option>All Assistants</option>${ASSISTANTS.map(a=>`<option>${esc(a)}</option>`).join('')}</select></label>
+    <label class="fl">Channels<select><option>All Channels</option></select></label>
+    <label class="fl">Courses<select><option>All Courses</option>${COURSES.map(a=>`<option>${esc(a)}</option>`).join('')}</select></label>
+    <label class="fl">Roles<select><option>All Roles</option></select></label>
+    <p class="fnote">In LUMA, the numbers update when you change a filter. In this practice copy they stay the same.</p>
+  </div>`;
+}
+function trendsHTML(){
+  const t = TRENDS.find(x=>x.id===S.trendSel) || TRENDS[0];
+  return `<div class="inspane">
+    <div class="topbar"><div><h2>Trend Reports</h2></div><div class="tools"><button class="tbtn dark" id="btnNewReport" data-a="newReport">${ic('plus',15)} New Report</button></div></div>
+    <div class="trends">
+      <div class="tlist inset">${TRENDS.map(r=>`<button class="titem ${r.id===t.id?'on':''}" data-a="trend" data-k="${r.id}">
+        <span class="row"><b style="font-size:13px">${esc(r.name)}</b><span class="ready">READY</span></span>
+        <span class="row"><span class="range">${r.range}</span><span class="sub">${r.gen}</span></span></button>`).join('')}</div>
+      <div class="tdet inset" id="trendDetail">
+        <div class="tdhead"><div><b>${esc(t.name)}</b><span class="sub">Generated ${t.gen}</span></div>
+          <div class="tools"><button class="textlink" data-a="toast" data-k="Delete removes the report for everyone. Only delete reports you created.">Delete</button><button class="tbtn dark" data-a="toast" data-k="Export downloads this report. Practice copy: nothing downloads.">Export</button></div></div>
+        <div class="themes"><b style="font-size:14px">Top Themes</b><span class="range">${t.range}</span>
+          ${t.themes.map(th=>`<div class="theme"><span class="n">${ic('user',11)} ${th.n}</span><b>${esc(th.t)}</b><p>${esc(th.d)}</p></div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+function insExportsHTML(){
+  return `<div class="inspane">
+    <div class="topbar"><div><h2>Exports</h2></div>
+      <div class="tools"><div class="search">${ic('search',15)}<input placeholder="Search exports..." aria-label="Search exports"></div>
+      <select class="tbtn" aria-label="Sort"><option>Sort by Newest</option><option>Sort by Oldest</option></select>
+      <select class="tbtn" aria-label="Insight type"><option>All insight types</option><option>Aggregated insights</option><option>Datapoints</option><option>Languages</option><option>Shortcut button clicks</option></select></div></div>
+    <div class="insbody inset">${exportsTableHTML('ins')}</div>
+  </div>`;
+}
+
+/* ---------- modals ---------- */
+function exportsTableHTML(area){
+  const rows = S.exports[area];
+  if (!rows.length) return '<p class="sub">No exports found.</p>';
+  return `<div class="tablewrap"><table class="xtable">
+    <thead><tr><th>Report</th><th>File</th>${area==='inbox'?'<th>Anonymised</th>':''}${area==='ins'?'<th>Type</th>':''}<th>Created</th><th>Status</th><th></th></tr></thead>
+    <tbody>${rows.map(x=>`<tr>
+      <td><b>${esc(x.name)}</b><br><span class="sub">${esc(x.filters)}</span></td>
+      <td>${x.type}</td>${area==='inbox'?`<td>${x.anon?'Yes':'No'}</td>`:''}${area==='ins'?`<td>${esc(x.kind)}</td>`:''}
+      <td>${esc(x.created)}<br><span class="sub">by ${esc(x.by)}</span></td>
+      <td><span class="status ${x.status==='Ready'?'ready':'loading'}">${x.status}</span></td>
+      <td style="white-space:nowrap"><button class="mini" data-a="toast" data-k="Practice copy: no file is downloaded." ${x.status!=='Ready'?'disabled':''}>Download</button><button class="mini" data-a="viewlog" data-id="${x.id}">View log</button>
+      ${S.logOpen===x.id?`<div class="sub" style="margin-top:6px">${x.by==='You'?'Not downloaded yet.':'Downloaded by: A colleague'}</div>`:''}</td></tr>`).join('')}</tbody></table></div>
+    <p class="sub">LUMA logs who downloads each export and when.</p>`;
+}
+function modalHTML(){
+  const m = S.modal; if (!m) return '';
+  const wrap = (title, body, foot, wide) => `<div class="overlay" data-a="modalClose"><div class="modal ${wide?'wide':''}" role="dialog" aria-modal="true" aria-label="${esc(title)}" data-stop="1">
+    <div class="mhead"><h3>${title}</h3><button class="ib" data-a="modalClose" aria-label="Close">${ic('x',18)}</button></div>
+    <div class="mbody">${body}</div>${foot?`<div class="mfoot">${foot}</div>`:''}</div></div>`;
+  const nameOk = (m.name||'').trim().length>=3;
+  const footer = label => `<button class="b" data-a="modalClose">Cancel</button><button class="b dark" id="mgo" data-a="doExport" ${nameOk?'':'disabled'}>${label}</button>`;
+  if (m.kind==='view') return wrap(m.area==='imp'?'Improvement exports':'Exports', exportsTableHTML(m.area), '', true);
+  if (m.kind==='export' && m.area==='inbox'){
+    return wrap('Export report', `
+      <div class="field"><label for="mname">Report name <span class="req">*</span></label><span class="sub">These filters will be applied in your report:</span>
+        <input id="mname" value="${esc(m.name)}" placeholder="Enter report name" autocomplete="off"></div>
+      <div class="chips">${chipsHTML(false)}</div>
+      <div class="field"><span>Select file type</span><div class="radios">
+        <label><input type="radio" name="mtype" value="JSON" ${m.type==='JSON'?'checked':''}> JSON</label>
+        <label><input type="radio" name="mtype" value="CSV" ${m.type==='CSV'?'checked':''}> CSV</label></div>
+        <span class="sub">CSV opens in Excel or Google Sheets. JSON is for other tools.</span></div>
+      <div class="checks">
+        <label><input type="checkbox" id="manon" ${m.anon?'checked':''}> Anonymize data</label><p class="hint">Removes names, emails and other personal details. Tick this before sharing a file.</p>
+        <label><input type="checkbox" id="mtrace" ${m.trace?'checked':''}> Include agentic trace</label><p class="hint">Adds LUMA's behind-the-scenes steps (the Thought rows). Usually not needed.</p></div>`, footer('Export'));
+  }
+  if (m.kind==='export' && m.area==='imp'){
+    return wrap('Create export', `
+      <div class="field"><label for="mname">Report Name <span class="req">*</span></label><input id="mname" value="${esc(m.name)}" autocomplete="off"></div>
+      <div class="field"><label for="mscope">Status scope</label><span class="sub">Leave empty to include all statuses</span>
+        <select id="mscope">${opt('all','All statuses',m.scope)}${STATUSES.map(s=>opt(s,s,m.scope)).join('')}</select></div>
+      <div class="field"><span>Select file type</span><div class="radios">
+        <label><input type="radio" name="mtype" value="CSV" ${m.type==='CSV'?'checked':''}> CSV</label>
+        <label><input type="radio" name="mtype" value="JSON" ${m.type==='JSON'?'checked':''}> JSON</label></div></div>`, footer('Export'));
+  }
+  if (m.kind==='export' && m.area==='ins'){
+    const kinds = [['Aggregated insights','The totals on the dashboard'],['Datapoints','The day-by-day numbers behind the chart'],['Languages','Conversations by language'],['Shortcut button clicks','Clicks on preset buttons']];
+    return wrap('Create export', `
+      <div class="field"><label for="mname">Export name <span class="req">*</span></label><input id="mname" value="${esc(m.name)}" placeholder="Enter your export name" autocomplete="off"></div>
+      <span class="sub">These filters will be applied in your report:</span>
+      <div class="chips"><span class="chip"><b>Date Range:</b> 21 Sep 2026 — 21 Oct 2026</span><span class="chip"><b>Aggregated:</b> daily</span><span class="chip"><b>Feedback:</b> All Feedbacks</span><span class="chip"><b>Escalated:</b> All Escalations</span></div>
+      <div class="field"><span>Select export type</span><div class="radios col">
+        ${kinds.map(([v,h])=>`<label><input type="radio" name="mkind" value="${v}" ${m.kindSel===v?'checked':''}> ${v} <span class="sub">· ${h}</span></label>`).join('')}</div></div>
+      <div class="field"><span>Select file type</span><div class="radios">
+        ${['CSV','JSON','XLSX'].map(v=>`<label><input type="radio" name="mtype" value="${v}" ${m.type===v?'checked':''}> ${v}</label>`).join('')}</div></div>`, footer('Create'));
+  }
+  if (m.kind==='newReport'){
+    return wrap('Create New Trends Report', `
+      <div class="field"><label for="mname">Report name <span class="req">*</span></label><input id="mname" value="${esc(m.name)}" placeholder="Enter your report name" autocomplete="off"></div>
+      <div class="two"><div class="field"><label for="mfrom">Date from <span class="req">*</span></label><input id="mfrom" type="date" value="2026-10-14"></div>
+      <div class="field"><label for="mto">Date to</label><input id="mto" type="date" value="2026-10-21"></div></div>
+      <p class="sub">Tip: match the dates to a module or a month, and use a clear name such as "KCL PM – October 2026".</p>`,
+      `<button class="b" data-a="modalClose">Cancel</button><button class="b dark" id="mgo" data-a="doReport" ${nameOk?'':'disabled'}>Next</button>`);
+  }
+  return '';
+}
+
+/* ---------- toast ---------- */
+const toastEl = document.getElementById('toast'); let tT;
+function toast(msg){ toastEl.textContent=msg; toastEl.hidden=false; clearTimeout(tT); tT=setTimeout(()=>toastEl.hidden=true,3400); }
+
+/* ---------- walk-through ---------- */
+function reset(screen){ const keep=S.exports; S=freshState(); S.exports=keep; if(screen) S.screen=screen; }
+const TOUR = [
+ {ch:'Inbox',sel:'.nav',title:'Three sections, nothing to break',
+  text:'Your LUMA menu has three sections: <b>Inbox</b>, <b>Improvements</b> and <b>Insights</b>. You can look, search and download. You can\'t change how LUMA answers or what students see.',
+  before(){ reset('inbox'); }},
+ {ch:'Inbox',sel:'#convList',title:'The Inbox: every student chat',
+  text:'The Inbox lists every conversation students have had with LUMA, newest first. Each card shows the student and the Canvas course they were in.',
+  before(){ reset('inbox'); }},
+ {ch:'Inbox',sel:'#inboxTools',title:'Find what you\'re looking for',
+  text:'Use <b>Search</b> to find a word students used, such as "deadline". Use <b>Filters</b> to show one programme, a date range, low ratings or students passed to a person.',
+  before(){ reset('inbox'); }},
+ {ch:'Inbox',sel:'#convPane',title:'Read the whole conversation',
+  text:'Open any card to read exactly what the student asked and what LUMA replied. Student messages are in the blue bubbles.',
+  before(){ reset('inbox'); S.openId='c1'; }},
+ {ch:'Inbox',sel:'[data-src="c1-1"]',title:'See where the answer came from',
+  text:'<b>Sources</b> lists the course pages LUMA used. If an answer is wrong, this shows which page needs updating.',
+  before(){ reset('inbox'); S.openId='c1'; S.sources['c1-1']=true; }},
+ {ch:'Inbox',sel:'[data-improve="c1-1"]',title:'Spot a problem? Flag it',
+  text:'If an answer is wrong or missing, click <b>Improve Answer</b>. It goes to the Improvements list so the right person can fix it. You don\'t need to fix it yourself.',
+  before(){ reset('inbox'); S.openId='c1'; }},
+ {ch:'Inbox',sel:'#details',title:'Who, where, and did they need help?',
+  text:'This panel shows the programme and course. <b>Escalation</b> tells you if LUMA passed the student to a person. The Session details are personal data, so keep them private.',
+  before(){ reset('inbox'); S.openId='c4'; }},
+ {ch:'Inbox',sel:'#btnExports',title:'Take a copy if you need one',
+  text:'<b>Exports</b> downloads the conversations on screen as a spreadsheet. Tick <b>Anonymize data</b> before you share the file with anyone.',
+  before(){ reset('inbox'); S.openId='c1'; }},
+ {ch:'Improvements',sel:'#impList',title:'Improvements: the gaps to fix',
+  text:'Each row is a gap in what LUMA knows: a question it couldn\'t answer, or a student it passed to a person. Rows are grouped by status, from <b>To do</b> to <b>Done</b>.',
+  before(){ reset('improvements'); }},
+ {ch:'Improvements',sel:'#impList .irow .tags',title:'Where each one came from',
+  text:'<b>Auto-Generated</b> and <b>Unanswered Question</b> mean LUMA logged it itself. <b>Escalation</b> means a student was passed to a person. Items you flag with Improve Answer land here too.',
+  before(){ reset('improvements'); }},
+ {ch:'Improvements',sel:'#imeta',title:'Who\'s fixing it, and by when',
+  text:'Open an item to see what went wrong. Set the <b>status</b>, <b>priority</b>, <b>owner</b> and <b>due date</b> so everyone knows where the fix is up to.',
+  before(){ reset('improvement'); S.impSel='LW-142'; }},
+ {ch:'Improvements',sel:'#assoc',title:'The evidence',
+  text:'<b>Associated Messages</b> shows the student conversation behind the gap, and <b>Sources</b> shows the pages LUMA used. Whoever fixes it starts here.',
+  before(){ reset('improvement'); S.impSel='LW-142'; }},
+ {ch:'Improvements',sel:'#impTools',title:'Find and share',
+  text:'Search by keyword, or use <b>Filters</b> to show one tag, priority or programme. <b>Export</b> downloads the list as a spreadsheet to share progress.',
+  before(){ reset('improvements'); }},
+ {ch:'Insights',sel:'#metrics',title:'Insights: the numbers at a glance',
+  text:'How much LUMA is used and how well it\'s doing. <b>AI Resolution Rate</b> is the share of conversations LUMA handled without passing the student to a person.',
+  before(){ reset('insights'); }},
+ {ch:'Insights',sel:'#chart',title:'See the pattern over time',
+  text:'The chart shows conversations and escalations per day. Spikes usually line up with deadlines or a new intake.',
+  before(){ reset('insights'); }},
+ {ch:'Insights',sel:'#insTools',title:'Focus on your programme',
+  text:'Use <b>Filters</b> to pick an assistant, course or date range. <b>Export</b> downloads the numbers as CSV, JSON or Excel.',
+  before(){ reset('insights'); }},
+ {ch:'Insights',sel:'#trendDetail',title:'Trends: what students ask about most',
+  text:'A trend report groups conversations into themes, each with a short summary and the number of conversations. It\'s the quickest way to see what\'s on students\' minds.',
+  before(){ reset('insights'); S.insSub='trends'; }},
+ {ch:'Insights',sel:'#btnNewReport',title:'Make your own report',
+  text:'Click <b>New Report</b>, give it a name and pick the dates, such as a module or a month. Reports are shared, so only delete the ones you made.',
+  before(){ reset('insights'); S.insSub='trends'; }}
+];
+const CHAPTERS = ['Inbox','Improvements','Insights'];
+let tourIdx = 0;
+
+function applySpot(){
+  document.querySelectorAll('.spot').forEach(el=>el.classList.remove('spot'));
+  const stop = TOUR[tourIdx]; if (!stop) return;
+  const el = document.querySelector(stop.sel); if (el) el.classList.add('spot');
+}
+function go(i){
+  tourIdx = Math.max(0, Math.min(i, TOUR.length));
+  const stop = TOUR[tourIdx];
+  if (stop) stop.before();
+  render(); renderCoach();
+  const el = stop && document.querySelector(stop.sel);
+  if (el) el.scrollIntoView({block:'nearest',inline:'nearest',behavior:(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)?'auto':'smooth'});
+}
+const coach = document.getElementById('coach');
+function renderCoach(){
+  const n = TOUR.length, cur = TOUR[tourIdx];
+  const chapterBtns = CHAPTERS.map(c=>`<button class="${cur&&cur.ch===c?'on':''}" data-c="chapter" data-k="${c}">${c}</button>`).join('');
+  const dots = TOUR.map((_,i)=>`<button class="tdot ${i===tourIdx?'on':''} ${i<tourIdx?'past':''}" data-c="dot" data-i="${i}" aria-label="Go to stop ${i+1}"></button>`).join('');
+  if (cur){
+    const inCh = TOUR.filter(t=>t.ch===cur.ch), pos = inCh.indexOf(cur)+1;
+    coach.innerHTML = `<div class="tour">
+      <div class="tmeta"><div class="chapters" role="group" aria-label="Sections">${chapterBtns}</div><span class="count">${cur.ch} · stop ${pos} of ${inCh.length}</span><div class="tdots">${dots}</div><button class="tskip" data-c="skip">Skip the tour</button></div>
+      <h3>${cur.title}</h3><p>${cur.text}</p>
+      <div class="cbtns">${tourIdx>0?'<button class="cbtn" data-c="back">Back</button>':''}<button class="cbtn primary" data-c="next">${tourIdx===n-1?'Finish':'Next'}</button></div>
+    </div>`;
+  } else {
+    coach.innerHTML = `<div class="tour">
+      <div class="tmeta"><div class="chapters" role="group" aria-label="Sections">${chapterBtns}</div><span class="count">Tour complete</span></div>
+      <h3>That's LUMA</h3>
+      <p><b>Inbox</b> to read conversations, <b>Improvements</b> to track fixes, <b>Insights</b> for the numbers and trends. Click around as much as you like. Everything here is made up, and nothing you do changes LUMA.</p>
+      <div class="cbtns"><button class="cbtn" data-c="restart">Start the tour again</button></div>
+    </div>`;
+  }
+}
+coach.addEventListener('click', e=>{
+  const b = e.target.closest('[data-c]'); if (!b) return;
+  const c = b.dataset.c;
+  if (c==='next') go(tourIdx+1);
+  else if (c==='back') go(tourIdx-1);
+  else if (c==='dot') go(Number(b.dataset.i));
+  else if (c==='chapter') go(TOUR.findIndex(t=>t.ch===b.dataset.k));
+  else if (c==='skip') go(TOUR.length);
+  else if (c==='restart') go(0);
+});
+
+/* ---------- app events ---------- */
+function focusName(){ setTimeout(()=>{ const n=document.getElementById('mname'); n&&n.focus(); },0); }
+app.addEventListener('click', e=>{
+  const t = e.target.closest('[data-a]');
+  if (S.menu && !e.target.closest('.menu') && !(t && t.dataset.a==='menu')){ S.menu=null; if(!t){ render(); return; } }
+  if (S.improveFor && !e.target.closest('#impPop') && !(t && t.dataset.a==='improve')){ S.improveFor=null; S.improveMode=null; if(!t){ render(); return; } }
+  if (!t) return;
+  const a=t.dataset.a, k=t.dataset.k, id=t.dataset.id;
+  if (a==='modalClose' && t.classList.contains('overlay') && e.target.closest('[data-stop]')) return;
+  switch(a){
+    case 'go': S.screen=k; S.panel=null; S.menu=null; if(k==='insights') S.insSub='insights'; render(); return;
+    case 'sub': S.insSub=k; S.panel=null; render(); return;
+    case 'toast': toast(k); return;
+    case 'panel': S.panel = S.panel===k?null:k; S.menu=null; render(); return;
+    case 'panelClose': S.panel=null; render(); return;
+    case 'menu': S.menu = S.menu===k?null:k; S.panel=null; render(); return;
+    case 'createExport': S.menu=null; S.panel=null; S.modal={kind:'export',area:k,name:'',type:k==='inbox'?'JSON':'CSV',anon:false,trace:false,scope:'all',kindSel:'Aggregated insights'}; render(); focusName(); return;
+    case 'viewExports': S.menu=null; S.modal={kind:'view',area:k}; render(); return;
+    case 'modalClose': S.modal=null; S.logOpen=null; render(); return;
+    case 'viewlog': S.logOpen = S.logOpen===id?null:id; render(); return;
+    case 'doExport': {
+      const m=S.modal; if(!m||(m.name||'').trim().length<3) return;
+      let filters='';
+      if (m.area==='inbox'){ const f=S.filters; filters=[f.assistant!=='all'?'Assistant: '+f.assistant:'All assistants',{'30':'Last 30 days','7':'Last 7 days','1':'Today'}[f.date]].join(' · '); }
+      else if (m.area==='imp'){ filters = m.scope==='all'?'All statuses':'Status: '+m.scope; }
+      else filters='All assistants · Daily';
+      const xp={id:'e'+Date.now(),name:m.name.trim(),type:m.type,anon:!!m.anon,kind:m.kindSel,by:'You',created:'Wed Oct 21 2026',status:'Loading',filters};
+      S.exports[m.area].unshift(xp); S.modal=null; render();
+      toast(m.area==='ins'?'Export created. Find it under Insights > Exports.':'Export started. Find it under View exports.');
+      setTimeout(()=>{ xp.status='Ready'; render(); }, 2200);
+      return;
+    }
+    case 'newReport': S.modal={kind:'newReport',name:''}; render(); focusName(); return;
+    case 'doReport': S.modal=null; render(); toast('Practice copy stops here. In LUMA, Next takes you on to generate the report.'); return;
+    case 'trend': S.trendSel=k; render(); return;
+    case 'chartTable': S.chartTable=!S.chartTable; render(); return;
+    case 'resetInbox': S.filters=freshFilters(); S.search=''; render(); return;
+    case 'resetImp': S.impFilters=freshImpFilters(); S.impSearch=''; render(); return;
+    case 'chipx': if(k==='search') S.search=''; else S.filters[k]=freshFilters()[k]; render(); return;
+    case 'open': { S.openId=id; S.improveFor=null; S.improveMode=null; render(); const p=document.getElementById('convPane'); if(p) p.scrollTop=0; return; }
+    case 'thought': S.thoughts[k]=!S.thoughts[k]; render(); return;
+    case 'sources': S.sources[k]=!S.sources[k]; render(); return;
+    case 'togglePanel': S.detailsHidden=!S.detailsHidden; render(); return;
+    case 'improve': S.improveFor = S.improveFor===k?null:k; S.improveMode=null; S.linkQ=''; render(); return;
+    case 'improveMode': S.improveMode=k; render(); if(k==='link') setTimeout(()=>{const q=document.getElementById('lwq'); q&&q.focus();},0); return;
+    case 'improveBack': S.improveMode=null; render(); return;
+    case 'improveCreateConfirm': S.links[k]={id:'LW-151',t:'New improvement (practice)'}; S.improveFor=null; S.improveMode=null; render(); toast('Improvement LW-151 created in To do (practice only).'); return;
+    case 'pickLW': { const lw=impById(id); S.links[S.improveFor]=lw; S.improveFor=null; S.improveMode=null; render(); toast(`Linked to ${lw.id}.`); return; }
+    case 'toggleGroup': S.collapsed[k]=!S.collapsed[k]; render(); return;
+    case 'openImp': S.screen='improvement'; S.impSel=id; S.panel=null; render(); return;
+  }
+});
+app.addEventListener('submit', e=>{
+  e.preventDefault();
+  if (e.target.id==='searchForm'){
+    const v=document.getElementById('q').value.trim();
+    if (v && v.length<4){ toast('Type at least 4 letters to search.'); return; }
+    S.search=v; render();
+  } else if (e.target.id==='impSearchForm'){
+    S.impSearch=document.getElementById('iq').value.trim(); render();
+  }
+});
+app.addEventListener('change', e=>{
+  const el=e.target, d=el.dataset||{};
+  if (d.f){ S.filters[d.f]=el.value; render(); return; }
+  if (d.if){ S.impFilters[d.if]=el.value; render(); return; }
+  if (d.im){ const x=impById(S.impSel); if(x){ x[d.im]=el.value; if(d.im==='s') x.upd='just now'; toast('Saved (practice copy only).'); render(); } return; }
+  if (!S.modal) return;
+  if (el.name==='mtype') S.modal.type=el.value;
+  else if (el.name==='mkind') S.modal.kindSel=el.value;
+  else if (el.id==='manon') S.modal.anon=el.checked;
+  else if (el.id==='mtrace') S.modal.trace=el.checked;
+  else if (el.id==='mscope') S.modal.scope=el.value;
+});
+app.addEventListener('input', e=>{
+  const el=e.target;
+  if (el.id==='mname' && S.modal){ S.modal.name=el.value; const b=document.getElementById('mgo'); if(b) b.disabled = el.value.trim().length<3; }
+  if (el.id==='lwq'){ S.linkQ=el.value; const r=document.getElementById('lwres'); if(r) r.innerHTML=lwResults(el.value.trim().toLowerCase()); }
+});
+document.addEventListener('keydown', e=>{
+  if (e.key!=='Escape') return;
+  if (S.modal){ S.modal=null; render(); }
+  else if (S.panel||S.menu||S.improveFor){ S.panel=null; S.menu=null; S.improveFor=null; S.improveMode=null; render(); }
+});
+
+go(0);
+})();
+</script>
+
+</body></html>
